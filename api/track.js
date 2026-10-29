@@ -24,6 +24,33 @@ const decode = (value) => {
   }
 };
 
+// Fallback de geolocalização por IP (usado quando não há headers da Vercel).
+// ipapi.co tem tier gratuito; em produção na Vercel os headers já trazem geo.
+async function geoFromIp(ip) {
+  if (!ip || /^(127\.|10\.|192\.168\.|::1|0\.0\.0\.0)/.test(ip)) return {};
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 1200);
+    const response = await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`, {
+      signal: controller.signal,
+      headers: { "User-Agent": "gaby-landing/1.0" },
+    });
+    clearTimeout(timer);
+    if (!response.ok) return {};
+    const data = await response.json();
+    return {
+      country: data.country_code || "",
+      region: data.region || "",
+      city: data.city || "",
+      latitude: data.latitude || "",
+      longitude: data.longitude || "",
+      timezone: data.timezone || "",
+    };
+  } catch (error) {
+    return {};
+  }
+}
+
 async function redis(command, ...args) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -67,6 +94,20 @@ module.exports = async (req, res) => {
       ? JSON.parse(sanitize(JSON.stringify(body.extra), 2000))
       : {};
 
+  // Geo: prioriza headers da Vercel; se não existirem, tenta por IP.
+  let geo = {
+    country: req.headers["x-vercel-ip-country"] || "",
+    region: decode(req.headers["x-vercel-ip-country-region"] || ""),
+    city: decode(req.headers["x-vercel-ip-city"] || ""),
+    latitude: req.headers["x-vercel-ip-latitude"] || "",
+    longitude: req.headers["x-vercel-ip-longitude"] || "",
+    timezone: req.headers["x-vercel-ip-timezone"] || "",
+  };
+  if (!geo.country) {
+    const fallback = await geoFromIp(ip);
+    geo = { ...geo, ...fallback };
+  }
+
   const record = {
     id: crypto.randomUUID(),
     ts: Date.now(),
@@ -86,12 +127,12 @@ module.exports = async (req, res) => {
     extra,
     ipHash,
     userAgent: sanitize(req.headers["user-agent"] || "", 320),
-    country: sanitize(req.headers["x-vercel-ip-country"] || "", 8),
-    region: sanitize(decode(req.headers["x-vercel-ip-country-region"] || ""), 80),
-    city: sanitize(decode(req.headers["x-vercel-ip-city"] || ""), 80),
-    latitude: sanitize(req.headers["x-vercel-ip-latitude"] || "", 20),
-    longitude: sanitize(req.headers["x-vercel-ip-longitude"] || "", 20),
-    geoTimezone: sanitize(req.headers["x-vercel-ip-timezone"] || "", 60),
+    country: sanitize(geo.country || "", 8),
+    region: sanitize(geo.region || "", 80),
+    city: sanitize(geo.city || "", 80),
+    latitude: sanitize(geo.latitude || "", 20),
+    longitude: sanitize(geo.longitude || "", 20),
+    geoTimezone: sanitize(geo.timezone || "", 60),
   };
 
   try {
