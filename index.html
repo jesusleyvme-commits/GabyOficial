@@ -108,7 +108,7 @@
 
             <!-- Botão 2: X1 / Privado -->
             <a href="https://t.me/sou_gaby"
-               onclick="trackClick('Acesso_VIP_Privado')"
+               onclick="openPrivateModal(event)"
                target="_blank" rel="noopener noreferrer"
                class="flex items-center p-4 bg-cardPink border border-pink-200 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-95 group">
 
@@ -136,6 +136,50 @@
         </div>
 
     </div>
+
+    <!-- Modal de mensagem ao clicar no privado -->
+    <div id="privateModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-[#5a3f4a]/30 backdrop-blur-sm">
+        <div class="w-full max-w-sm rounded-3xl bg-white p-6 text-center shadow-xl border border-pink-100">
+            <div class="text-4xl mb-2">🥺❤️</div>
+            <h2 class="text-lg font-bold text-textDark mb-2">Antes de ir...</h2>
+            <p class="text-sm text-textSoft leading-relaxed mb-5">
+                Psiu... 🤫 Vou te esperar no meu privado. Me chama lá que eu respondo rapidinho, tá?
+            </p>
+            <a id="privateContinue" href="https://t.me/sou_gaby" target="_blank" rel="noopener noreferrer"
+               class="block w-full rounded-2xl bg-pink-400 px-4 py-3 font-bold text-white shadow-sm hover:bg-pink-500 transition-colors">
+                Abrir o privado ❤️
+            </a>
+            <button type="button" onclick="closePrivateModal()"
+                    class="mt-3 w-full rounded-2xl border border-pink-200 px-4 py-3 text-sm font-medium text-textSoft hover:bg-pink-50 transition-colors">
+                Agora não
+            </button>
+            <p class="mt-4 text-[11px] text-gray-400">Apenas +18</p>
+        </div>
+    </div>
+
+    <script>
+        const privateModal = document.getElementById('privateModal');
+
+        function openPrivateModal(event) {
+            if (event) event.preventDefault();
+            trackClick('Acesso_VIP_Privado');
+            privateModal.classList.remove('hidden');
+            privateModal.classList.add('flex');
+        }
+
+        function closePrivateModal() {
+            privateModal.classList.add('hidden');
+            privateModal.classList.remove('flex');
+        }
+
+        privateModal.addEventListener('click', (event) => {
+            if (event.target === privateModal) closePrivateModal();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closePrivateModal();
+        });
+    </script>
 
 </body>
 </html>
