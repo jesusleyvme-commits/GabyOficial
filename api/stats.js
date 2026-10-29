@@ -2,8 +2,6 @@
 // Env vars necessárias:
 //   UPSTASH_REDIS_REST_URL
 //   UPSTASH_REDIS_REST_TOKEN
-//   DASHBOARD_USER (opcional, padrão: gaby)
-//   DASHBOARD_PASS (opcional, padrão definido abaixo)
 //
 // Acesso: GET /api/stats com headers "x-dashboard-user" e "x-dashboard-pass"
 
@@ -54,9 +52,8 @@ module.exports = async (req, res) => {
     req.headers["x-dashboard-pass"] ||
     (req.query && req.query.pass) ||
     "";
-  const expectedUser = process.env.DASHBOARD_USER || "gaby";
-  const expectedPass =
-    process.env.DASHBOARD_PASS || "aec199ad244d5fb51348215a";
+  const expectedUser = "gaby";
+  const expectedPass = "aec199ad244d5fb51348215a";
 
   if (providedUser !== expectedUser || providedPass !== expectedPass) {
     res.status(401).json({ ok: false, error: "unauthorized" });
