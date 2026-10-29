@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Painel · Gaby</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: Inter, system-ui, sans-serif; }
+    .bar { background: linear-gradient(90deg, #f9a8d4, #f472b6); }
+  </style>
+</head>
+<body class="min-h-screen bg-[#fff0f5] text-[#333] p-4">
+
+  <!-- Login -->
+  <div id="login" class="max-w-md mx-auto mt-24 bg-white rounded-3xl shadow-xl border border-pink-100 p-8">
+    <h1 class="text-2xl font-bold mb-1">Painel da Gaby</h1>
+    <p class="text-sm text-gray-500 mb-6">Acesso privado. Introduz a chave do dashboard.</p>
+    <input id="keyInput" type="password" placeholder="Chave do dashboard"
+           class="w-full rounded-2xl border border-pink-200 px-4 py-3 mb-3 outline-none focus:ring-2 focus:ring-pink-300">
+    <button id="loginBtn" class="w-full rounded-2xl bg-pink-400 py-3 font-bold text-white hover:bg-pink-500 transition-colors">
+      Entrar
+    </button>
+    <p id="loginError" class="hidden mt-3 text-sm text-red-500">Chave incorreta.</p>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="hidden max-w-5xl mx-auto">
+    <header class="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div>
+        <h1 class="text-2xl font-bold">Painel da Gaby</h1>
+        <p id="updatedAt" class="text-xs text-gray-400">—</p>
+      </div>
+      <div class="flex gap-2">
+        <button id="refreshBtn" class="rounded-xl bg-white border border-pink-200 px-4 py-2 text-sm font-medium hover:bg-pink-50">Atualizar</button>
+        <button id="logoutBtn" class="rounded-xl bg-white border border-pink-200 px-4 py-2 text-sm font-medium hover:bg-pink-50">Sair</button>
+      </div>
+    </header>
+
+    <section id="cards" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"></section>
+
+    <section class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="bg-white rounded-2xl border border-pink-100 p-5">
+        <h2 class="font-bold mb-3">Cliques nos botões</h2>
+        <div id="clicks"></div>
+      </div>
+      <div class="bg-white rounded-2xl border border-pink-100 p-5">
+        <h2 class="font-bold mb-3">Eventos</h2>
+        <div id="events"></div>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-pink-100 p-5 mb-6">
+      <h2 class="font-bold mb-3">Eventos por dia</h2>
+      <div id="series" class="flex items-end gap-1 h-32 overflow-x-auto"></div>
+    </section>
+
+    <section class="grid md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-white rounded-2xl border border-pink-100 p-5">
+        <h2 class="font-bold mb-3">Países / cidades</h2>
+        <div id="countries"></div>
+      </div>
+      <div class="bg-white rounded-2xl border border-pink-100 p-5">
+        <h2 class="font-bold mb-3">Origem (referrer)</h2>
+        <div id="referrers"></div>
+      </div>
+      <div class="bg-white rounded-2xl border border-pink-100 p-5">
+        <h2 class="font-bold mb-3">Dispositivos</h2>
+        <div id="devices"></div>
+        <h2 class="font-bold mt-4 mb-3">Idiomas</h2>
+        <div id="locales"></div>
+      </div>
+    </section>
+
+    <section class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="bg-white rounded-2xl border border-pink-100 p-5">
+        <h2 class="font-bold mb-3">Fusos horários</h2>
+        <div id="timezones"></div>
+      </div>
+      <div class="bg-white rounded-2xl border border-pink-100 p-5">
+        <h2 class="font-bold mb-3">Sistemas</h2>
+        <div id="platforms"></div>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-pink-100 p-5 mb-10">
+      <h2 class="font-bold mb-3">Últimos eventos</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-left text-gray-400">
+            <tr>
+              <th class="py-2 pr-3">Hora</th>
+              <th class="py-2 pr-3">Evento</th>
+              <th class="py-2 pr-3">Botão</th>
+              <th class="py-2 pr-3">País</th>
+              <th class="py-2 pr-3">Cidade</th>
+              <th class="py-2 pr-3">Origem</th>
+              <th class="py-2 pr-3">Dispositivo</th>
+            </tr>
+          </thead>
+          <tbody id="recent"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const login = document.getElementById("login");
+    const dashboard = document.getElementById("dashboard");
+    const keyInput = document.getElementById("keyInput");
+    const loginError = document.getElementById("loginError");
+
+    const params = new URLSearchParams(window.location.search);
+    let key = params.get("key") || sessionStorage.getItem("gaby_dash_key") || "";
+
+    function showDashboard() {
+      login.classList.add("hidden");
+      dashboard.classList.remove("hidden");
+    }
+
+    function logout() {
+      sessionStorage.removeItem("gaby_dash_key");
+      key = "";
+      dashboard.classList.add("hidden");
+      login.classList.remove("hidden");
+    }
+
+    function rows(target, items, unit = "") {
+      const el = document.getElementById(target);
+      if (!items || !items.length) {
+        el.innerHTML = '<p class="text-sm text-gray-400">Sem dados ainda.</p>';
+        return;
+      }
+      const max = Math.max(...items.map((i) => i.count));
+      el.innerHTML = items
+        .map(
+          (item) => `
+          <div class="mb-2">
+            <div class="flex justify-between text-sm mb-1">
+              <span class="truncate pr-2">${escapeHtml(item.name)}</span>
+              <span class="font-semibold">${item.count}${unit}</span>
+            </div>
+            <div class="h-2 rounded-full bg-pink-50 overflow-hidden">
+              <div class="bar h-full rounded-full" style="width:${Math.max(4, (item.count / max) * 100)}%"></div>
+            </div>
+          </div>`
+        )
+        .join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function formatTime(ts) {
+      try {
+        return new Date(ts).toLocaleString("pt-PT");
+      } catch (error) {
+        return "-";
+      }
+    }
+
+    async function load() {
+      if (!key) return;
+      sessionStorage.setItem("gaby_dash_key", key);
+      const response = await fetch("/api/stats", { headers: { "x-dashboard-key": key } });
+      if (response.status === 401) {
+        logout();
+        return;
+      }
+      const data = await response.json();
+      if (!data.ok) {
+        logout();
+        return;
+      }
+      showDashboard();
+      document.getElementById("updatedAt").textContent = "Atualizado " + new Date().toLocaleTimeString("pt-PT");
+
+      const cards = [
+        ["Eventos", data.total],
+        ["Visitantes únicos", data.uniqueVisitors],
+        ["Recorrentes", data.returningVisitors],
+        ["Tempo médio (s)", data.avgTimeOnPage],
+      ];
+      document.getElementById("cards").innerHTML = cards
+        .map(
+          ([label, value]) => `
+          <div class="bg-white rounded-2xl border border-pink-100 p-4">
+            <p class="text-xs text-gray-400 uppercase tracking-wide">${label}</p>
+            <p class="text-2xl font-bold mt-1">${value}</p>
+          </div>`
+        )
+        .join("");
+
+      rows("clicks", data.clicks);
+      rows("events", data.events);
+      rows("countries", data.countries);
+      rows("referrers", data.referrers);
+      rows("devices", data.devices);
+      rows("locales", data.locales);
+      rows("timezones", data.timezones);
+      rows("platforms", data.platforms);
+
+      const series = data.series || [];
+      const maxDay = series.length ? Math.max(...series.map((s) => s.count)) : 1;
+      document.getElementById("series").innerHTML = series.length
+        ? series
+            .map(
+              (s) => `
+              <div class="flex flex-col items-center justify-end h-full min-w-[26px]" title="${s.day}: ${s.count}">
+                <div class="bar w-4 rounded-t" style="height:${Math.max(4, (s.count / maxDay) * 100)}%"></div>
+                <span class="text-[9px] text-gray-400 mt-1 rotate-45">${s.day.slice(5)}</span>
+              </div>`
+            )
+            .join("")
+        : '<p class="text-sm text-gray-400">Sem dados ainda.</p>';
+
+      document.getElementById("recent").innerHTML = (data.recent || [])
+        .map(
+          (event) => `
+          <tr class="border-t border-pink-50">
+            <td class="py-2 pr-3 whitespace-nowrap text-gray-500">${formatTime(event.ts)}</td>
+            <td class="py-2 pr-3">${escapeHtml(event.event)}</td>
+            <td class="py-2 pr-3">${escapeHtml(event.label) || "-"}</td>
+            <td class="py-2 pr-3">${escapeHtml(event.country) || "-"}</td>
+            <td class="py-2 pr-3">${escapeHtml(event.city) || "-"}</td>
+            <td class="py-2 pr-3">${escapeHtml(event.referrer) || "-"}</td>
+            <td class="py-2 pr-3">${escapeHtml(event.device) || "-"}</td>
+          </tr>`
+        )
+        .join("") || '<tr><td class="py-3 text-gray-400" colspan="7">Sem eventos ainda.</td></tr>';
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      key = keyInput.value.trim();
+      if (!key) return;
+      load().then(() => {
+        if (dashboard.classList.contains("hidden")) {
+          loginError.classList.remove("hidden");
+        }
+      });
+    });
+
+    keyInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") document.getElementById("loginBtn").click();
+    });
+
+    document.getElementById("refreshBtn").addEventListener("click", load);
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+
+    if (key) load();
+    setInterval(() => {
+      if (key && !dashboard.classList.contains("hidden")) load();
+    }, 30000);
+  </script>
+</body>
+</html>
