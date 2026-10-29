@@ -1,11 +1,11 @@
-// API de estatísticas do dashboard (protegida por chave)
+// API de estatísticas do dashboard (protegida por usuário e senha)
 // Env vars necessárias:
 //   UPSTASH_REDIS_REST_URL
 //   UPSTASH_REDIS_REST_TOKEN
-//   DASHBOARD_KEY (chave secreta do painel)
+//   DASHBOARD_USER (opcional, padrão: gaby)
+//   DASHBOARD_PASS (opcional, padrão definido abaixo)
 //
-// Acesso: GET /api/stats com header "x-dashboard-key: <DASHBOARD_KEY>"
-//         (ou ?key=<DASHBOARD_KEY> para links rápidos)
+// Acesso: GET /api/stats com headers "x-dashboard-user" e "x-dashboard-pass"
 
 const EVENTS_KEY = "gaby:events";
 
@@ -46,14 +46,19 @@ const dayOf = (ts) => new Date(ts).toISOString().slice(0, 10);
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
 
-  const provided =
-    req.headers["x-dashboard-key"] ||
-    (req.query && req.query.key) ||
+  const providedUser =
+    req.headers["x-dashboard-user"] ||
+    (req.query && req.query.user) ||
     "";
-  const expected =
-    process.env.DASHBOARD_KEY || "737871db2c7ec579fec4b91e647266ca15279dac2f447f50c982d22c697e5f56";
+  const providedPass =
+    req.headers["x-dashboard-pass"] ||
+    (req.query && req.query.pass) ||
+    "";
+  const expectedUser = process.env.DASHBOARD_USER || "gaby";
+  const expectedPass =
+    process.env.DASHBOARD_PASS || "aec199ad244d5fb51348215a";
 
-  if (!expected || provided !== expected) {
+  if (providedUser !== expectedUser || providedPass !== expectedPass) {
     res.status(401).json({ ok: false, error: "unauthorized" });
     return;
   }

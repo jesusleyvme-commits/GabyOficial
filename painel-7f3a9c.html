@@ -16,13 +16,15 @@
   <!-- Login -->
   <div id="login" class="max-w-md mx-auto mt-24 bg-white rounded-3xl shadow-xl border border-pink-100 p-8">
     <h1 class="text-2xl font-bold mb-1">Painel da Gaby</h1>
-    <p class="text-sm text-gray-500 mb-6">Acesso privado. Introduz a chave do dashboard.</p>
-    <input id="keyInput" type="password" placeholder="Chave do dashboard"
+    <p class="text-sm text-gray-500 mb-6">Acesso privado. Introduz o usuário e a senha.</p>
+    <input id="userInput" type="text" placeholder="Usuário"
+           class="w-full rounded-2xl border border-pink-200 px-4 py-3 mb-3 outline-none focus:ring-2 focus:ring-pink-300">
+    <input id="keyInput" type="password" placeholder="Senha"
            class="w-full rounded-2xl border border-pink-200 px-4 py-3 mb-3 outline-none focus:ring-2 focus:ring-pink-300">
     <button id="loginBtn" class="w-full rounded-2xl bg-pink-400 py-3 font-bold text-white hover:bg-pink-500 transition-colors">
       Entrar
     </button>
-    <p id="loginError" class="hidden mt-3 text-sm text-red-500">Chave incorreta.</p>
+    <p id="loginError" class="hidden mt-3 text-sm text-red-500">Usuário ou senha incorretos.</p>
   </div>
 
   <!-- Dashboard -->
@@ -108,11 +110,13 @@
   <script>
     const login = document.getElementById("login");
     const dashboard = document.getElementById("dashboard");
+    const userInput = document.getElementById("userInput");
     const keyInput = document.getElementById("keyInput");
     const loginError = document.getElementById("loginError");
 
     const params = new URLSearchParams(window.location.search);
-    let key = params.get("key") || sessionStorage.getItem("gaby_dash_key") || "";
+    let user = params.get("user") || sessionStorage.getItem("gaby_dash_user") || "";
+    let pass = params.get("pass") || sessionStorage.getItem("gaby_dash_pass") || "";
 
     function showDashboard() {
       login.classList.add("hidden");
@@ -120,8 +124,10 @@
     }
 
     function logout() {
-      sessionStorage.removeItem("gaby_dash_key");
-      key = "";
+      sessionStorage.removeItem("gaby_dash_user");
+      sessionStorage.removeItem("gaby_dash_pass");
+      user = "";
+      pass = "";
       dashboard.classList.add("hidden");
       login.classList.remove("hidden");
     }
@@ -166,9 +172,12 @@
     }
 
     async function load() {
-      if (!key) return;
-      sessionStorage.setItem("gaby_dash_key", key);
-      const response = await fetch("/api/stats", { headers: { "x-dashboard-key": key } });
+      if (!user || !pass) return;
+      sessionStorage.setItem("gaby_dash_user", user);
+      sessionStorage.setItem("gaby_dash_pass", pass);
+      const response = await fetch("/api/stats", {
+        headers: { "x-dashboard-user": user, "x-dashboard-pass": pass },
+      });
       if (response.status === 401) {
         logout();
         return;
@@ -237,8 +246,9 @@
     }
 
     document.getElementById("loginBtn").addEventListener("click", () => {
-      key = keyInput.value.trim();
-      if (!key) return;
+      user = userInput.value.trim();
+      pass = keyInput.value.trim();
+      if (!user || !pass) return;
       load().then(() => {
         if (dashboard.classList.contains("hidden")) {
           loginError.classList.remove("hidden");
@@ -253,9 +263,9 @@
     document.getElementById("refreshBtn").addEventListener("click", load);
     document.getElementById("logoutBtn").addEventListener("click", logout);
 
-    if (key) load();
+    if (user && pass) load();
     setInterval(() => {
-      if (key && !dashboard.classList.contains("hidden")) load();
+      if (user && pass && !dashboard.classList.contains("hidden")) load();
     }, 30000);
   </script>
 </body>
