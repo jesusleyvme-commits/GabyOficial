@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaby | O meu cantinho</title>
+
+    <!-- Tailwind CSS (Framework de estilos) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome (Ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Configuração de Cores Personalizadas -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandPink: '#FFF0F5', // Fundo rosa muito claro e fofo
+                        cardPink: '#FFF8FA',
+                        textDark: '#333333',
+                        textSoft: '#666666'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- ========================================== -->
+    <!-- CÓDIGO DE RASTREIO (PIXEL DO FACEBOOK/TIKTOK) -->
+    <!-- ========================================== -->
+    <script>
+        // Substitui este script pelo código real do teu Meta Pixel ou TikTok Pixel
+        console.log("Pixel carregado: Pronto para rastrear conversões.");
+
+        // Função para disparar eventos quando os botões são clicados
+        function trackClick(eventLabel) {
+            console.log("Evento disparado: " + eventLabel);
+            // Exemplo Meta Pixel: fbq('track', 'Lead', { content_name: eventLabel });
+            // Exemplo TikTok: ttq.track('ClickButton', { content_name: eventLabel });
+        }
+    </script>
+</head>
+
+<body class="bg-brandPink text-textDark font-sans antialiased min-h-screen flex items-center justify-center p-4">
+
+    <!-- Container Principal (Formato Telemóvel) -->
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden p-6 border border-pink-100 relative">
+
+        <!-- Secção de Perfil -->
+        <div class="flex flex-col items-center text-center mb-6">
+            <!-- FOTO DE PERFIL: Substitui o 'src' por uma selfie casual no espelho (com camisola larga/quarto ao fundo) -->
+            <img src="assets/avatar.jpg"
+                 alt="Gaby"
+                 style="object-position: center 22%;"
+                 class="w-28 h-28 mx-auto rounded-full object-cover border-4 border-pink-50 mb-3 shadow-sm">
+
+            <!-- Nome e Verificado -->
+            <h1 class="flex w-full items-center justify-center gap-2 text-center text-2xl font-bold">
+                <span>Gaby</span>
+                <!-- Ícone de Verificado (selo azul) -->
+                <svg class="w-7 h-7 shrink-0 drop-shadow-sm" viewBox="0 0 24 24" aria-label="Conta verificada" role="img">
+                    <defs>
+                        <linearGradient id="verifiedGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#4BA8FF"/>
+                            <stop offset="1" stop-color="#1D7FEB"/>
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#verifiedGrad)" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/>
+                    <path d="m9 12 2 2 4-4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </h1>
+        </div>
+
+        <!-- Biografia (Copy curto, misterioso e direto) -->
+        <div class="text-center mb-8 px-2">
+            <p class="font-bold text-textDark mb-2 text-md">Estudante brasileira em Lisboa 🇧🇷🐾</p>
+            <p class="text-textSoft text-sm leading-relaxed">
+                Sozinha num país novo. Uso isso aqui escondida pra me soltar e ser mimada no privado... Nosso segredo, tá? 🥺
+            </p>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="space-y-4 mb-8">
+
+            <!-- Botão 1: Canal de Prévias -->
+            <a href="LINK_DO_TEU_CANAL_DE_PREVIAS"
+               onclick="trackClick('Previso_Gratis')"
+               target="_blank" rel="noopener noreferrer"
+               class="flex items-center p-4 bg-white border border-pink-200 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-95 group">
+
+                <div class="flex-shrink-0 w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mr-4 group-hover:bg-blue-100 transition-colors">
+                    <i class="fa-brands fa-telegram text-2xl"></i>
+                </div>
+
+                <div class="flex-grow text-left">
+                    <p class="font-bold text-textDark text-md">O que eu gravo no meu quarto 🙈</p>
+                    <p class="text-xs text-textSoft mt-0.5">Entra no meu canal (grátis)</p>
+                </div>
+
+                <div class="text-gray-300 group-hover:text-pink-300 transition-colors">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+            </a>
+
+            <!-- Botão 2: X1 / Privado -->
+            <a href="LINK_DO_TEU_TELEGRAM_PRIVADO"
+               onclick="trackClick('Acesso_VIP_Privado')"
+               target="_blank" rel="noopener noreferrer"
+               class="flex items-center p-4 bg-cardPink border border-pink-200 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-95 group">
+
+                <div class="flex-shrink-0 w-12 h-12 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center mr-4 group-hover:bg-pink-200 transition-colors">
+                    <i class="fa-solid fa-heart text-xl"></i>
+                </div>
+
+                <div class="flex-grow text-left">
+                    <p class="font-bold text-textDark text-md">Vem me mimar no privado 🥺</p>
+                    <p class="text-xs text-pink-500/80 mt-0.5 font-medium">Acesso VIP (MBWay / IBAN)</p>
+                </div>
+
+                <div class="text-pink-200 group-hover:text-pink-400 transition-colors">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- Rodapé -->
+        <div class="text-center pt-4 border-t border-pink-50">
+            <p class="text-xs text-gray-400 font-medium">
+                Nosso segredinho... 🤫🐾 (Apenas +18)
+            </p>
+        </div>
+
+    </div>
+
+</body>
+</html>
