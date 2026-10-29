@@ -73,39 +73,135 @@
         }(window,document,'ttq');
     </script>
 
-    <!-- Função central de tracking (localização, idioma, dispositivo, campanha) -->
+    <!-- ============================================================
+         TRACKING PRÓPRIO (server-side) + PIXELS
+         Envia eventos para /api/track (guardados no Upstash Redis).
+         ============================================================ -->
     <script>
-        // Reúne parâmetros de contexto: localização, idioma, timezone, campanha UTM...
+        const TRACK_ENDPOINT = '/api/track';
+
+        // ID anónimo persistente do visitante (para contar únicos/recorrentes)
+        function getVisitorId() {
+            try {
+                let id = localStorage.getItem('gaby_vid');
+                if (!id) {
+                    id = (crypto && crypto.randomUUID)
+                        ? crypto.randomUUID()
+                        : 'v-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+                    localStorage.setItem('gaby_vid', id);
+                }
+                return id;
+            } catch (error) {
+                return 'anonimo';
+            }
+        }
+
+        // Deteta se é a primeira visita (para marcar novos vs recorrentes)
+        function detectFirstSeen() {
+            try {
+                const key = 'gaby_seen';
+                if (localStorage.getItem(key)) return false;
+                localStorage.setItem(key, '1');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        const VISITOR_ID = getVisitorId();
+        const FIRST_SEEN = detectFirstSeen();
+
+        // Reúne o máximo de contexto possível do visitante
         function getTrackingContext(eventLabel) {
             const params = new URLSearchParams(window.location.search);
             const campaign = {};
-            ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']
+            ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']
                 .forEach((key) => { if (params.get(key)) campaign[key] = params.get(key); });
 
+            const ua = navigator.userAgent || '';
             return Object.assign({
                 content_name: eventLabel,
-                page_location: window.location.href,        // URL completa
-                page_path: window.location.pathname,          // caminho
-                referrer: document.referrer || 'direct',      // de onde veio
-                locale: navigator.language || 'unknown',      // ex: pt-BR / pt-PT
+                visitor: VISITOR_ID,
+                firstSeen: FIRST_SEEN,
+                page: window.location.href,
+                page_path: window.location.pathname,
+                referrer: document.referrer || 'direct',
+                locale: navigator.language || 'unknown',
                 language: (navigator.languages && navigator.languages.join(',')) || navigator.language || 'unknown',
-                timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone) || 'unknown', // ex: Europe/Lisbon
+                timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone) || 'unknown',
                 screen: screen.width + 'x' + screen.height,
-                device: /Mobi|Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+                viewport: window.innerWidth + 'x' + window.innerHeight,
+                device: /Mobi|Android|iPhone/i.test(ua) ? 'mobile' : 'desktop',
+                connection: (navigator.connection && navigator.connection.effectiveType) || 'unknown',
+                platform: (navigator.userAgentData && navigator.userAgentData.platform) || 'unknown'
             }, campaign);
         }
 
-        // Dispara conversão em todos os pixels quando um botão é clicado
+        // Envia evento para o backend próprio (não bloqueia a navegação)
+        function gabyTrack(eventName, extra) {
+            const payload = Object.assign(getTrackingContext(eventName), {
+                event: eventName,
+                extra: extra || {}
+            });
+            try {
+                const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+                if (navigator.sendBeacon && navigator.sendBeacon(TRACK_ENDPOINT, blob)) return;
+            } catch (error) {}
+            try {
+                fetch(TRACK_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    keepalive: true
+                });
+            } catch (error) {}
+        }
+
+        // Dispara conversão nos pixels + no backend próprio
         function trackClick(eventLabel) {
             const data = getTrackingContext(eventLabel);
-            console.log('Evento disparado:', data);
 
             try { if (typeof gtag === 'function') gtag('event', 'generate_lead', data); } catch (e) {}
             try { if (typeof fbq === 'function') { fbq('track', 'Lead', data); fbq('trackCustom', 'CTAClick', data); } } catch (e) {}
             try { if (window.ttq && typeof ttq.track === 'function') { ttq.track('ClickButton', data); ttq.track('Lead', data); } } catch (e) {}
 
             (window.dataLayer = window.dataLayer || []).push({ event: 'cta_conversion', ...data });
+            gabyTrack('cta_click', { label: eventLabel });
         }
+
+        // Page view
+        window.addEventListener('load', () => gabyTrack('page_view'));
+
+        // Profundidade de scroll (25/50/75/100%)
+        (function () {
+            const marks = [25, 50, 75, 100];
+            const seen = {};
+            window.addEventListener('scroll', () => {
+                const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+                const percent = scrollable <= 0 ? 100 : Math.round((window.scrollY / scrollable) * 100);
+                marks.forEach((mark) => {
+                    if (percent >= mark && !seen[mark]) {
+                        seen[mark] = true;
+                        gabyTrack('scroll_depth', { percent: mark });
+                    }
+                });
+            }, { passive: true });
+        })();
+
+        // Tempo na página (enviado ao sair/minimizar)
+        (function () {
+            const start = Date.now();
+            let sent = false;
+            const send = () => {
+                if (sent) return;
+                sent = true;
+                gabyTrack('time_on_page', { seconds: Math.round((Date.now() - start) / 1000) });
+            };
+            window.addEventListener('pagehide', send);
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') send();
+            });
+        })();
     </script>
 </head>
 

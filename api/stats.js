@@ -95,9 +95,8 @@ module.exports = async (req, res) => {
     if (event.firstSeen === false) {
       returning.add(event.visitor || event.id);
     }
-    if (event.country) inc(countries, `${event.country}${event.city ? " · " + event.city : ""}`);
-    if (event.city) inc(cities, event.city);
-    if (event.country) inc(cities, `${event.city || "?"} (${event.country})`.trim());
+    if (event.country) inc(countries, event.country);
+    if (event.city) inc(cities, `${event.city} (${event.country || "?"})`);
     inc(referrers, hostOf(event.referrer));
     inc(devices, event.device || "desconhecido");
     inc(locales, event.locale || "desconhecido");
