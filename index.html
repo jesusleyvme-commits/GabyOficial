@@ -27,23 +27,96 @@
         }
     </script>
 
-    <!-- ========================================== -->
-    <!-- CÓDIGO DE RASTREIO (PIXEL DO FACEBOOK/TIKTOK) -->
-    <!-- ========================================== -->
-    <script>
-        // Substitui este script pelo código real do teu Meta Pixel ou TikTok Pixel
-        console.log("Pixel carregado: Pronto para rastrear conversões.");
+    <!-- ============================================================
+         RASTREIO / PIXELS — SUBSTITUI OS IDs PLACEHOLDER PELOS REAIS
+         ============================================================ -->
 
-        // Função para disparar eventos quando os botões são clicados
+    <!-- Google Analytics 4 (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX'); // TODO: ID GA4
+    </script>
+
+    <!-- Meta Pixel (Facebook / Instagram) -->
+    <script>
+        !function(f,b,e,v,n,t,s){
+            if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)
+        }(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '000000000000000'); // TODO: Meta Pixel ID
+        fbq('track', 'PageView');
+    </script>
+
+    <!-- TikTok Pixel -->
+    <script>
+        !function(w,d,t){
+            w.TiktokAnalyticsObject=t;
+            var ttq=w[t]=w[t]||[];
+            ttq.methods=['page','track','identify','instances','debug','on','off','once','ready','alias','group','enableCookie','disableCookie'];
+            ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
+            for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+            ttq.load=function(e,n){
+                var r='https://analytics.tiktok.com/i18n/pixel/events.js';
+                ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=r;ttq._t=ttq._t||{};ttq._t[e]=+new Date;ttq._o=ttq._o||{};ttq._o[e]=n||{};
+                var o=d.createElement('script');o.type='text/javascript';o.async=!0;o.src=r+'?sdkid='+e+'&lib='+t;
+                var a=d.getElementsByTagName('script')[0];a.parentNode.insertBefore(o,a)
+            };
+            ttq.load('XXXXXXXXXXXXXXX'); // TODO: TikTok Pixel ID
+            ttq.page();
+        }(window,document,'ttq');
+    </script>
+
+    <!-- Função central de tracking (localização, idioma, dispositivo, campanha) -->
+    <script>
+        // Reúne parâmetros de contexto: localização, idioma, timezone, campanha UTM...
+        function getTrackingContext(eventLabel) {
+            const params = new URLSearchParams(window.location.search);
+            const campaign = {};
+            ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']
+                .forEach((key) => { if (params.get(key)) campaign[key] = params.get(key); });
+
+            return Object.assign({
+                content_name: eventLabel,
+                page_location: window.location.href,        // URL completa
+                page_path: window.location.pathname,          // caminho
+                referrer: document.referrer || 'direct',      // de onde veio
+                locale: navigator.language || 'unknown',      // ex: pt-BR / pt-PT
+                language: (navigator.languages && navigator.languages.join(',')) || navigator.language || 'unknown',
+                timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone) || 'unknown', // ex: Europe/Lisbon
+                screen: screen.width + 'x' + screen.height,
+                device: /Mobi|Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+            }, campaign);
+        }
+
+        // Dispara conversão em todos os pixels quando um botão é clicado
         function trackClick(eventLabel) {
-            console.log("Evento disparado: " + eventLabel);
-            // Exemplo Meta Pixel: fbq('track', 'Lead', { content_name: eventLabel });
-            // Exemplo TikTok: ttq.track('ClickButton', { content_name: eventLabel });
+            const data = getTrackingContext(eventLabel);
+            console.log('Evento disparado:', data);
+
+            try { if (typeof gtag === 'function') gtag('event', 'generate_lead', data); } catch (e) {}
+            try { if (typeof fbq === 'function') { fbq('track', 'Lead', data); fbq('trackCustom', 'CTAClick', data); } } catch (e) {}
+            try { if (window.ttq && typeof ttq.track === 'function') { ttq.track('ClickButton', data); ttq.track('Lead', data); } } catch (e) {}
+
+            (window.dataLayer = window.dataLayer || []).push({ event: 'cta_conversion', ...data });
         }
     </script>
 </head>
 
 <body class="bg-brandPink text-textDark font-sans antialiased min-h-screen flex items-center justify-center p-4">
+
+    <!-- Fallback do Meta Pixel (sem JavaScript) -->
+    <noscript>
+        <img height="1" width="1" style="display:none"
+             src="https://www.facebook.com/tr?id=000000000000000&ev=PageView&noscript=1"
+             alt=""/>
+    </noscript>
 
     <!-- Container Principal (Formato Telemóvel) -->
     <div class="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden p-6 border border-pink-100 relative">
@@ -88,7 +161,7 @@
 
             <!-- Botão 1: Canal de Prévias -->
             <a href="https://t.me/+wBUYZRygSlgxMThh"
-               onclick="trackClick('Previso_Gratis')"
+               onclick="trackClick('Previews_Gratis')"
                target="_blank" rel="noopener noreferrer"
                class="flex items-center p-4 bg-white border border-pink-200 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-95 group">
 
