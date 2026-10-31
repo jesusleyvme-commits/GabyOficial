@@ -370,10 +370,10 @@
         <div id="ageCard" class="w-full max-w-sm bg-white rounded-2xl shadow-xl border border-pink-100 p-5 text-center">
             <p class="text-base font-semibold mb-4">Tem 18 anos ou mais?</p>
             <div class="flex gap-3">
-                <button id="ageYes" class="flex-1 rounded-2xl bg-pink-400 py-4 text-base font-bold text-white hover:bg-pink-500 active:scale-95 transition-all">
+                <button id="ageYes" class="flex-1 rounded-full bg-pink-400/90 py-3 text-base font-bold text-white shadow-sm hover:bg-pink-500 active:scale-95 transition-all">
                     Sim
                 </button>
-                <button id="ageNo" class="flex-1 rounded-2xl bg-white border border-pink-200 py-4 text-base font-semibold text-textSoft hover:bg-pink-50 active:scale-95 transition-all">
+                <button id="ageNo" class="flex-1 rounded-full bg-transparent border border-pink-200 py-3 text-base font-medium text-textSoft hover:bg-white/70 active:scale-95 transition-all">
                     Não
                 </button>
             </div>
@@ -398,8 +398,8 @@
                 card.innerHTML =
                     '<p class="text-sm text-textSoft mb-4">Este conteúdo é apenas para maiores de 18 anos.</p>' +
                     '<div class="flex gap-3">' +
-                    '<button id="ageBack" class="flex-1 rounded-2xl bg-pink-400 py-4 text-base font-bold text-white hover:bg-pink-500 active:scale-95 transition-all">Voltar</button>' +
-                    '<a href="https://www.google.com" class="flex-1 rounded-2xl bg-white border border-pink-200 py-4 text-base font-semibold text-textSoft hover:bg-pink-50 flex items-center justify-center">Sair</a>' +
+                    '<button id="ageBack" class="flex-1 rounded-full bg-pink-400/90 py-3 text-base font-bold text-white hover:bg-pink-500 active:scale-95 transition-all">Voltar</button>' +
+                    '<a href="https://www.google.com" class="flex-1 rounded-full bg-transparent border border-pink-200 py-3 text-base font-medium text-textSoft hover:bg-white/70 flex items-center justify-center">Sair</a>' +
                     '</div>';
                 document.getElementById('ageBack').addEventListener('click', function () { location.reload(); });
             });
