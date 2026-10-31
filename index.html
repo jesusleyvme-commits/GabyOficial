@@ -248,6 +248,49 @@
              alt=""/>
     </noscript>
 
+    <!-- 1. Entrada neutra (primeira dobra) -->
+    <div id="gateIntro" class="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden p-6 border border-pink-100 text-center">
+        <img src="assets/avatar-face.jpg"
+             alt="Gaby"
+             class="w-28 h-28 mx-auto rounded-full object-cover border-4 border-pink-50 mb-3 shadow-sm">
+        <h1 class="text-2xl font-bold mb-1">Gaby</h1>
+        <p class="text-xs text-textSoft mb-4">Lisboa · Portugal</p>
+        <p class="text-textSoft text-sm leading-relaxed mb-6 px-2">
+            Um espaço meu, sem pressa.<br>Se quiseres espreitar, entra.
+        </p>
+        <button id="gateEnter" class="w-full rounded-2xl bg-pink-400 py-3 font-bold text-white hover:bg-pink-500 transition-colors">
+            Entrar
+        </button>
+    </div>
+
+    <!-- 2. Confirmação de idade -->
+    <div id="gateAge" class="hidden max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden p-6 border border-pink-100 text-center">
+        <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center">
+            <i class="fa-solid fa-user-shield text-2xl"></i>
+        </div>
+        <h2 class="text-xl font-bold mb-2">Conteúdo para adultos</h2>
+        <p class="text-textSoft text-sm leading-relaxed mb-6 px-2">
+            Este conteúdo é para maiores de 18 anos.<br>Confirmas que tens 18 anos ou mais?
+        </p>
+        <div class="space-y-3">
+            <button id="gateConfirm" class="w-full rounded-2xl bg-pink-400 py-3 font-bold text-white hover:bg-pink-500 transition-colors">
+                Sim, tenho 18+
+            </button>
+            <button id="gateDeny" class="w-full rounded-2xl bg-white border border-pink-200 py-3 font-medium text-textSoft hover:bg-pink-50 transition-colors">
+                Não
+            </button>
+        </div>
+    </div>
+
+    <!-- 3. Saída -->
+    <div id="gateDenied" class="hidden max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden p-6 border border-pink-100 text-center">
+        <p class="text-textSoft text-sm leading-relaxed mb-4">Precisas de ter 18 anos ou mais para continuar.</p>
+        <a href="https://www.google.com" class="text-xs text-pink-400 hover:underline">Sair</a>
+    </div>
+
+    <!-- Conteúdo (só após confirmação de idade) -->
+    <div id="siteContent" class="hidden w-full flex-col items-center">
+
     <!-- Container Principal (Formato Telemóvel) -->
     <div class="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden p-6 border border-pink-100 relative">
 
@@ -363,6 +406,43 @@
             <a href="https://t.me/sou_gaby" target="_blank" rel="noopener noreferrer" class="hover:text-pink-400 hover:underline underline-offset-2">Contacto</a>
         </p>
     </div>
+
+    </div><!-- /siteContent -->
+
+    <script>
+        (function () {
+            const intro = document.getElementById('gateIntro');
+            const age = document.getElementById('gateAge');
+            const denied = document.getElementById('gateDenied');
+            const content = document.getElementById('siteContent');
+
+            function show(target) {
+                [intro, age, denied, content].forEach(function (node) {
+                    if (node === target) {
+                        node.classList.remove('hidden');
+                        if (node === content) node.classList.add('flex');
+                    } else {
+                        node.classList.add('hidden');
+                        if (node === content) node.classList.remove('flex');
+                    }
+                });
+            }
+
+            let confirmed = false;
+            try { confirmed = sessionStorage.getItem('gaby_age_ok') === '1'; } catch (error) {}
+
+            if (confirmed) {
+                show(content);
+            } else {
+                document.getElementById('gateEnter').addEventListener('click', function () { show(age); });
+                document.getElementById('gateConfirm').addEventListener('click', function () {
+                    try { sessionStorage.setItem('gaby_age_ok', '1'); } catch (error) {}
+                    show(content);
+                });
+                document.getElementById('gateDeny').addEventListener('click', function () { show(denied); });
+            }
+        })();
+    </script>
 
 </body>
 </html>
