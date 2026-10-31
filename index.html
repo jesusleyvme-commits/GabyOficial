@@ -259,8 +259,8 @@
             <!-- FOTO DE PERFIL: Substitui o 'src' por uma selfie casual no espelho (com camisola larga/quarto ao fundo) -->
             <img src="assets/avatar.jpg"
                  alt="Gaby"
-                 style="object-position: center;"
-                 class="w-32 h-32 mx-auto rounded-full object-contain border-4 border-pink-50 mb-3 shadow-sm bg-pink-50">
+                 style="object-position: center 18%;"
+                 class="w-32 h-32 mx-auto rounded-full object-cover border-4 border-pink-50 mb-3 shadow-sm">
 
             <!-- Nome e Verificado -->
             <h1 class="flex w-full items-center justify-center gap-2 text-center text-2xl font-bold">
@@ -389,12 +389,9 @@
             const overlay = document.getElementById('ageOverlay');
             const card = document.getElementById('ageCard');
 
-            let confirmed = false;
-            try { confirmed = sessionStorage.getItem('gaby_age_ok') === '1'; } catch (error) {}
-            if (confirmed) overlay.classList.add('hidden');
+            try { sessionStorage.removeItem('gaby_age_ok'); } catch (error) {}
 
             document.getElementById('ageYes').addEventListener('click', function () {
-                try { sessionStorage.setItem('gaby_age_ok', '1'); } catch (error) {}
                 overlay.classList.add('hidden');
             });
 
