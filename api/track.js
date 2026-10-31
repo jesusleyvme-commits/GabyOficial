@@ -10,6 +10,39 @@ const crypto = require("crypto");
 const EVENTS_KEY = "gaby:events";
 const MAX_EVENTS = 10000;
 
+// Limite simples por IP (por instância). Serve para travar spam básico.
+const RATE_LIMIT = 120;
+const RATE_WINDOW_MS = 60 * 1000;
+const rateBuckets = new Map();
+
+function isRateLimited(key) {
+  const now = Date.now();
+  let bucket = rateBuckets.get(key);
+  if (!bucket || now - bucket.start > RATE_WINDOW_MS) {
+    bucket = { start: now, count: 0 };
+    rateBuckets.set(key, bucket);
+  }
+  bucket.count += 1;
+
+  if (rateBuckets.size > 5000) {
+    for (const [bucketKey, value] of rateBuckets) {
+      if (now - value.start > RATE_WINDOW_MS) rateBuckets.delete(bucketKey);
+    }
+  }
+
+  return bucket.count > RATE_LIMIT;
+}
+
+function parseExtra(value) {
+  if (!value || typeof value !== "object") return {};
+  try {
+    const parsed = JSON.parse(sanitize(JSON.stringify(value), 2000));
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    return {};
+  }
+}
+
 const sanitize = (value, max = 200) =>
   String(value ?? "")
     .replace(/[\u0000-\u001F\u007F]/g, "")
@@ -89,10 +122,14 @@ module.exports = async (req, res) => {
     ? crypto.createHash("sha256").update(ip + salt).digest("hex").slice(0, 32)
     : null;
 
-  const extra =
-    body.extra && typeof body.extra === "object"
-      ? JSON.parse(sanitize(JSON.stringify(body.extra), 2000))
-      : {};
+  if (isRateLimited(ipHash || "anonimo")) {
+    res.status(429).json({ ok: false, error: "rate_limited" });
+    return;
+  }
+
+  const extra = parseExtra(body.extra);
+  // O front manda o rótulo do botão em `label`, `content_name` ou `extra.label`.
+  const label = body.label || body.content_name || extra.label || "";
 
   // Geo: prioriza headers da Vercel; se não existirem, tenta por IP.
   let geo = {
@@ -112,7 +149,7 @@ module.exports = async (req, res) => {
     id: crypto.randomUUID(),
     ts: Date.now(),
     event: sanitize(body.event || "unknown", 60),
-    label: sanitize(body.label || "", 140),
+    label: sanitize(label, 140),
     visitor: sanitize(body.visitor || "", 64),
     firstSeen: Boolean(body.firstSeen),
     page: sanitize(body.page || "", 500),

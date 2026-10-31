@@ -5,7 +5,16 @@
 //
 // Acesso: GET /api/stats com headers "x-dashboard-user" e "x-dashboard-pass"
 
+const crypto = require("crypto");
+
 const EVENTS_KEY = "gaby:events";
+
+function safeEqual(a, b) {
+  const left = Buffer.from(String(a ?? ""));
+  const right = Buffer.from(String(b ?? ""));
+  if (left.length !== right.length) return false;
+  return crypto.timingSafeEqual(left, right);
+}
 
 async function redis(command, ...args) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -44,18 +53,15 @@ const dayOf = (ts) => new Date(ts).toISOString().slice(0, 10);
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
 
-  const providedUser =
-    req.headers["x-dashboard-user"] ||
-    (req.query && req.query.user) ||
-    "";
-  const providedPass =
-    req.headers["x-dashboard-pass"] ||
-    (req.query && req.query.pass) ||
-    "";
-  const expectedUser = "gaby";
-  const expectedPass = "aec199ad244d5fb51348215a";
+  const providedUser = req.headers["x-dashboard-user"] || "";
+  const providedPass = req.headers["x-dashboard-pass"] || "";
 
-  if (providedUser !== expectedUser || providedPass !== expectedPass) {
+  // Define DASHBOARD_USER e DASHBOARD_PASS nas env vars do projeto (Vercel).
+  // Os valores abaixo são apenas fallback de compatibilidade.
+  const expectedUser = process.env.DASHBOARD_USER || "gaby";
+  const expectedPass = process.env.DASHBOARD_PASS || "aec199ad244d5fb51348215a";
+
+  if (!safeEqual(providedUser, expectedUser) || !safeEqual(providedPass, expectedPass)) {
     res.status(401).json({ ok: false, error: "unauthorized" });
     return;
   }
