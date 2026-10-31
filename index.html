@@ -385,9 +385,12 @@
             const overlay = document.getElementById('ageOverlay');
             const card = document.getElementById('ageCard');
 
-            try { sessionStorage.removeItem('gaby_age_ok'); } catch (error) {}
+            let confirmed = false;
+            try { confirmed = localStorage.getItem('gaby_age_ok') === '1'; } catch (error) {}
+            if (confirmed) overlay.classList.add('hidden');
 
             document.getElementById('ageYes').addEventListener('click', function () {
+                try { localStorage.setItem('gaby_age_ok', '1'); } catch (error) {}
                 overlay.classList.add('hidden');
             });
 
