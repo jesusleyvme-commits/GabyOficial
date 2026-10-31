@@ -5,8 +5,9 @@
   "description": "Link na bio da Gaby",
   "scripts": {
     "start": "node scripts/serve.js",
-    "check": "node --check api/track.js && node --check api/stats.js && node --check scripts/serve.js && node --check scripts/meta-check.js",
+    "check": "node --check api/track.js && node --check api/stats.js && node --check scripts/serve.js && node --check scripts/meta-check.js && node --check scripts/meta-fix.js",
     "test": "node --test \"tests/*.test.js\"",
-    "meta:check": "node scripts/meta-check.js"
+    "meta:check": "node scripts/meta-check.js",
+    "meta:fix": "node scripts/meta-fix.js"
   }
 }

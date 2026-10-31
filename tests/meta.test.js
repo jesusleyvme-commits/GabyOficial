@@ -9,6 +9,7 @@ const {
   imageSize,
   isAllowed,
 } = require(path.resolve(__dirname, "../scripts/meta-check.js"));
+const { stampDomain } = require(path.resolve(__dirname, "../scripts/meta-fix.js"));
 
 const ROOT = path.resolve(__dirname, "..");
 
@@ -33,6 +34,20 @@ test("robots.txt permite o crawler da Meta e bloqueia a API", () => {
   assert.equal(isAllowed(robots, "meta-externalagent/1.1", "/"), true);
   assert.equal(isAllowed(robots, "WhatsApp/2.23", "/"), true);
   assert.equal(isAllowed(robots, "outro-bot", "/api/track"), false);
+});
+
+test("meta:fix coloca URLs absolutas e é idempotente", () => {
+  const html =
+    '<meta property="og:image" content="/assets/og.jpg">' +
+    '<meta name="twitter:image" content="/assets/og.jpg">' +
+    '<meta property="og:type" content="website">' +
+    '<link rel="canonical" href="/">';
+  const once = stampDomain(html, "https://gaby.example");
+  assert.match(once, /og:image" content="https:\/\/gaby\.example\/assets\/og\.jpg"/);
+  assert.match(once, /twitter:image" content="https:\/\/gaby\.example\/assets\/og\.jpg"/);
+  assert.match(once, /og:url" content="https:\/\/gaby\.example\/"/);
+  assert.match(once, /rel="canonical" href="https:\/\/gaby\.example\/"/);
+  assert.equal(stampDomain(once, "https://gaby.example"), once);
 });
 
 test("meta:check em modo local não devolve erros", () => {
