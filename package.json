@@ -1,0 +1,11 @@
+{
+  "name": "gabyoficial",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Link na bio da Gaby",
+  "scripts": {
+    "start": "node scripts/serve.js",
+    "check": "node --check api/track.js && node --check api/stats.js && node --check scripts/serve.js",
+    "test": "node --test tests/"
+  }
+}

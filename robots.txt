@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /painel-7f3a9c
+Disallow: /painel-7f3a9c.html
+Disallow: /api/
