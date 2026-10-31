@@ -128,8 +128,14 @@ module.exports = async (req, res) => {
   }
 
   const extra = parseExtra(body.extra);
-  // O front manda o rótulo do botão em `label`, `content_name` ou `extra.label`.
-  const label = body.label || body.content_name || extra.label || "";
+  const eventName = sanitize(body.event || "unknown", 60);
+  const contentName = typeof body.content_name === "string" ? body.content_name : "";
+  // O front manda o rótulo do botão em `label`, `content_name` (só quando difere
+  // do evento) ou `extra.label`. Isto evita poluir os cliques com page_view etc.
+  const label =
+    body.label ||
+    extra.label ||
+    (contentName && contentName !== body.event ? contentName : "");
 
   // Geo: prioriza headers da Vercel; se não existirem, tenta por IP.
   let geo = {
@@ -148,7 +154,7 @@ module.exports = async (req, res) => {
   const record = {
     id: crypto.randomUUID(),
     ts: Date.now(),
-    event: sanitize(body.event || "unknown", 60),
+    event: eventName,
     label: sanitize(label, 140),
     visitor: sanitize(body.visitor || "", 64),
     firstSeen: Boolean(body.firstSeen),
