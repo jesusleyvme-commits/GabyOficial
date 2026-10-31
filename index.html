@@ -395,7 +395,13 @@
             });
 
             document.getElementById('ageNo').addEventListener('click', function () {
-                card.innerHTML = '<p class="text-sm text-textSoft mb-3">Precisas de ter 18 anos ou mais para continuar.</p><a href="https://www.google.com" class="inline-block text-xs text-pink-400 hover:underline">Sair</a>';
+                card.innerHTML =
+                    '<p class="text-sm text-textSoft mb-4">Este conteúdo é apenas para maiores de 18 anos.</p>' +
+                    '<div class="flex gap-3">' +
+                    '<button id="ageBack" class="flex-1 rounded-2xl bg-pink-400 py-4 text-base font-bold text-white hover:bg-pink-500 active:scale-95 transition-all">Voltar</button>' +
+                    '<a href="https://www.google.com" class="flex-1 rounded-2xl bg-white border border-pink-200 py-4 text-base font-semibold text-textSoft hover:bg-pink-50 flex items-center justify-center">Sair</a>' +
+                    '</div>';
+                document.getElementById('ageBack').addEventListener('click', function () { location.reload(); });
             });
         })();
     </script>
