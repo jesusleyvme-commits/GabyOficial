@@ -3,3 +3,34 @@ Allow: /
 Disallow: /painel-7f3a9c
 Disallow: /painel-7f3a9c.html
 Disallow: /api/
+
+# Crawlers de pré-visualização de links (Meta, WhatsApp, Telegram, etc.)
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+User-agent: Discordbot
+Allow: /
+
+User-agent: Pinterestbot
+Allow: /
+
+User-agent: Googlebot
+Allow: /

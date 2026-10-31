@@ -10,22 +10,33 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="apple-touch-icon" href="assets/avatar.jpg">
 
+    <link rel="canonical" href="/">
+
     <!-- Open Graph / Instagram / WhatsApp (pré-visualização de links) -->
-    <!-- TODO: quando o domínio estiver definido, trocar as URLs /... por URLs absolutas -->
-    <meta property="og:type" content="profile">
+    <!-- Depois de publicar, troca as URLs /... por URLs absolutas com o teu domínio
+         (ex.: https://teudominio/assets/og.jpg). Corre `npm run meta:check -- https://teudominio` para validar. -->
+    <meta property="og:type" content="website">
     <meta property="og:site_name" content="Gaby">
     <meta property="og:title" content="Gaby | O meu cantinho">
     <meta property="og:description" content="Estudante brasileira em Lisboa. Entra no canal de prévias grátis ou fala comigo no privado. Apenas +18.">
-    <meta property="og:image" content="/assets/avatar.jpg">
+    <meta property="og:image" content="/assets/og.jpg">
     <meta property="og:image:type" content="image/jpeg">
-    <meta property="og:image:width" content="672">
-    <meta property="og:image:height" content="900">
-    <meta property="og:image:alt" content="Gaby">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Gaby — estudante brasileira em Lisboa">
     <meta property="og:locale" content="pt_PT">
+    <meta property="og:locale:alternate" content="pt_BR">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Gaby | O meu cantinho">
     <meta name="twitter:description" content="Estudante brasileira em Lisboa. Entra no canal de prévias grátis ou fala comigo no privado. Apenas +18.">
-    <meta name="twitter:image" content="/assets/avatar.jpg">
+    <meta name="twitter:image" content="/assets/og.jpg">
+    <meta name="twitter:image:alt" content="Gaby — estudante brasileira em Lisboa">
+
+    <!-- Verificação de domínio da Meta (Instagram/Facebook):
+         gera o código em business.facebook.com > Configurações da conta > Domínios
+         e descomenta a linha abaixo com o código recebido.
+    <meta name="facebook-domain-verification" content="SEU_CODIGO_AQUI">
+    -->
 
     <!-- Tailwind CSS (Framework de estilos) -->
     <script src="https://cdn.tailwindcss.com"></script>
