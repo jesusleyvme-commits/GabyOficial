@@ -294,7 +294,7 @@
             <a href="https://t.me/+wBUYZRygSlgxMThh"
                onclick="trackClick('Previews_Gratis')"
                target="_blank" rel="noopener noreferrer"
-               class="flex items-center p-4 bg-white border border-pink-200 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-95 group">
+               class="flex items-center p-4 bg-white border border-pink-200 rounded-2xl shadow-sm hover:shadow-lg hover:shadow-pink-200/60 hover:border-pink-300 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] group">
 
                 <div class="flex-shrink-0 w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mr-4 group-hover:bg-blue-100 transition-colors">
                     <i class="fa-brands fa-telegram text-2xl"></i>
@@ -314,7 +314,7 @@
             <a href="https://t.me/sou_gaby?text=Oi%20Gaby%21%20Vim%20pelo%20seu%20link%20e%20quero%20falar%20com%20voc%C3%AA%20no%20privado%20%F0%9F%A5%BA%E2%9D%A4%EF%B8%8F"
                onclick="trackClick('Acesso_VIP_Privado')"
                target="_blank" rel="noopener noreferrer"
-               class="flex items-center p-4 bg-cardPink border border-pink-200 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-95 group">
+               class="flex items-center p-4 bg-gradient-to-r from-pink-50 to-rose-100 border border-pink-300 rounded-2xl shadow-md shadow-pink-200/60 hover:shadow-lg hover:shadow-pink-300/70 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] group">
 
                 <div class="flex-shrink-0 w-12 h-12 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center mr-4 group-hover:bg-pink-200 transition-colors">
                     <i class="fa-solid fa-heart text-xl"></i>
@@ -332,8 +332,8 @@
 
         </div>
 
-        <!-- Elementos de confiança + aviso (dentro do cartão) -->
-        <div class="mt-2 pt-4 border-t border-pink-100 text-center">
+        <!-- Elementos de confiança (dentro do cartão) -->
+        <div class="mt-2 pt-4 border-t border-pink-100">
             <div class="flex items-center justify-center gap-4 text-[11px] text-gray-400">
                 <span class="inline-flex items-center gap-1">
                     <i class="fa-solid fa-lock text-emerald-400"></i> Ligação segura
@@ -346,21 +346,21 @@
                     <i class="fa-solid fa-comment-dots"></i> Contacto
                 </a>
             </div>
-            <p class="text-xs text-gray-400 font-medium mt-4">
-                Nosso segredinho... 🤫🐾
-            </p>
-            <p class="text-[11px] text-gray-400 mt-1 leading-relaxed">
-                Ao continuar, aceitas o uso de cookies.
-            </p>
-            <p class="text-[10px] text-gray-400 mt-2 leading-relaxed">
-                <a href="privacidade.html" class="hover:text-pink-400 hover:underline underline-offset-2">Política de Privacidade</a>
-                <span class="mx-1">·</span>
-                <a href="termos.html" class="hover:text-pink-400 hover:underline underline-offset-2">Termos de Uso</a>
-                <span class="mx-1">·</span>
-                <a href="https://t.me/sou_gaby" target="_blank" rel="noopener noreferrer" class="hover:text-pink-400 hover:underline underline-offset-2">Contacto</a>
-            </p>
         </div>
 
+    </div>
+
+    <!-- Aviso (final do site, fora do cartão) -->
+    <div class="w-full max-w-md mx-auto mt-3 text-center px-2">
+        <p class="text-xs text-gray-400 font-medium">Nosso segredinho... 🤫🐾</p>
+        <p class="text-[11px] text-gray-400 mt-1 leading-relaxed">Ao continuar, aceitas o uso de cookies.</p>
+        <p class="text-[10px] text-gray-400 mt-2 leading-relaxed">
+            <a href="privacidade.html" class="hover:text-pink-400 hover:underline underline-offset-2">Política de Privacidade</a>
+            <span class="mx-1">·</span>
+            <a href="termos.html" class="hover:text-pink-400 hover:underline underline-offset-2">Termos de Uso</a>
+            <span class="mx-1">·</span>
+            <a href="https://t.me/sou_gaby" target="_blank" rel="noopener noreferrer" class="hover:text-pink-400 hover:underline underline-offset-2">Contacto</a>
+        </p>
     </div>
 
     </div><!-- /siteContent -->
@@ -370,10 +370,10 @@
         <div id="ageCard" class="w-full max-w-sm bg-white rounded-2xl shadow-xl border border-pink-100 p-5 text-center">
             <p class="text-base font-semibold mb-4">Tem 18 anos ou mais?</p>
             <div class="flex gap-3">
-                <button id="ageYes" class="flex-1 rounded-full bg-pink-400/90 py-3 text-base font-bold text-white shadow-sm hover:bg-pink-500 active:scale-95 transition-all">
+                <button id="ageYes" class="flex-1 rounded-full bg-gradient-to-r from-pink-400 to-rose-400 py-3 text-base font-bold text-white shadow-md shadow-pink-200 hover:shadow-lg hover:shadow-pink-300/70 active:scale-95 transition-all">
                     Sim
                 </button>
-                <button id="ageNo" class="flex-1 rounded-full bg-transparent border border-pink-200 py-3 text-base font-medium text-textSoft hover:bg-white/70 active:scale-95 transition-all">
+                <button id="ageNo" class="flex-1 rounded-full bg-transparent border border-pink-200 py-3 text-base font-medium text-textSoft hover:border-pink-300 hover:bg-white/70 active:scale-95 transition-all">
                     Não
                 </button>
             </div>
