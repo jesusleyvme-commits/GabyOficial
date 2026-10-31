@@ -369,38 +369,38 @@
 
     </div><!-- /siteContent -->
 
+    <!-- Pergunta de idade (pequena, sobre a página) -->
+    <div id="ageOverlay" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
+        <div id="ageCard" class="w-full max-w-sm bg-white rounded-2xl shadow-xl border border-pink-100 p-4 text-center">
+            <p class="text-sm font-semibold mb-3">Tem 18 anos ou mais?</p>
+            <div class="flex gap-2">
+                <button id="ageYes" class="flex-1 rounded-xl bg-pink-400 py-2.5 text-sm font-bold text-white hover:bg-pink-500 transition-colors">
+                    Sim
+                </button>
+                <button id="ageNo" class="flex-1 rounded-xl bg-white border border-pink-200 py-2.5 text-sm font-medium text-textSoft hover:bg-pink-50 transition-colors">
+                    Não
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         (function () {
-            const intro = document.getElementById('gateIntro');
-            const age = document.getElementById('gateAge');
-            const denied = document.getElementById('gateDenied');
-            const content = document.getElementById('siteContent');
-
-            function show(target) {
-                [intro, age, denied, content].forEach(function (node) {
-                    if (node === target) {
-                        node.classList.remove('hidden');
-                        if (node === content) node.classList.add('flex');
-                    } else {
-                        node.classList.add('hidden');
-                        if (node === content) node.classList.remove('flex');
-                    }
-                });
-            }
+            const overlay = document.getElementById('ageOverlay');
+            const card = document.getElementById('ageCard');
 
             let confirmed = false;
             try { confirmed = sessionStorage.getItem('gaby_age_ok') === '1'; } catch (error) {}
+            if (confirmed) overlay.classList.add('hidden');
 
-            if (confirmed) {
-                show(content);
-            } else {
-                document.getElementById('gateEnter').addEventListener('click', function () { show(age); });
-                document.getElementById('gateConfirm').addEventListener('click', function () {
-                    try { sessionStorage.setItem('gaby_age_ok', '1'); } catch (error) {}
-                    show(content);
-                });
-                document.getElementById('gateDeny').addEventListener('click', function () { show(denied); });
-            }
+            document.getElementById('ageYes').addEventListener('click', function () {
+                try { sessionStorage.setItem('gaby_age_ok', '1'); } catch (error) {}
+                overlay.classList.add('hidden');
+            });
+
+            document.getElementById('ageNo').addEventListener('click', function () {
+                card.innerHTML = '<p class="text-sm text-textSoft mb-3">Precisas de ter 18 anos ou mais para continuar.</p><a href="https://www.google.com" class="inline-block text-xs text-pink-400 hover:underline">Sair</a>';
+            });
         })();
     </script>
 
