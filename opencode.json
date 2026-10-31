@@ -1,0 +1,27 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "kaio_supabase_xjtlvcalqdvzswwsdadi": {
+      "type": "remote",
+      "url": "https://mcp.supabase.com/mcp?project_ref=xjtlvcalqdvzswwsdadi",
+      "enabled": true,
+      "timeout": 30000
+    }
+  },
+  "permission": {
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_*": "ask",
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_list_tables": "allow",
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_list_extensions": "allow",
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_list_migrations": "allow",
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_get_logs": "allow",
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_get_advisors": "allow",
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_get_project_url": "allow",
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_get_publishable_keys": "allow",
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_generate_typescript_types": "allow",
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_list_edge_functions": "allow",
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_get_edge_function": "allow",
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_search_docs": "allow",
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_list_branches": "allow",
+    "kaio_supabase_xjtlvcalqdvzswwsdadi_get_storage_config": "allow"
+  }
+}

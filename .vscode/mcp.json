@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "kaio_supabase_xjtlvcalqdvzswwsdadi": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=xjtlvcalqdvzswwsdadi"
+    }
+  }
+}
