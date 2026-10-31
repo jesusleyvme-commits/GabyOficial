@@ -6,6 +6,6 @@
   "scripts": {
     "start": "node scripts/serve.js",
     "check": "node --check api/track.js && node --check api/stats.js && node --check scripts/serve.js",
-    "test": "node --test tests/"
+    "test": "node --test \"tests/*.test.js\""
   }
 }
