@@ -120,11 +120,17 @@ function report(items) {
 }
 
 async function fetchResource(url) {
-  const response = await fetch(url, {
-    redirect: "follow",
-    headers: { "user-agent": META_UA, accept: "*/*" },
-  });
-  return response;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
+  try {
+    return await fetch(url, {
+      redirect: "follow",
+      headers: { "user-agent": META_UA, accept: "*/*" },
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function checkImage(items, imageUrl, expectedWidth, expectedHeight, baseUrl) {
