@@ -282,7 +282,9 @@ async function main() {
   if (meta["og:image"]) {
     const imageUrl = /^https?:\/\//i.test(meta["og:image"])
       ? meta["og:image"]
-      : new URL(meta["og:image"], baseUrl === "local" ? "http://local" : baseUrl).href;
+      : localMode
+        ? meta["og:image"]
+        : new URL(meta["og:image"], baseUrl).href;
     await checkImage(items, imageUrl, meta["og:image:width"], meta["og:image:height"], baseUrl);
   }
 
