@@ -153,6 +153,7 @@
 
         // Envia evento para o backend próprio (não bloqueia a navegação)
         function gabyTrack(eventName, extra) {
+            if (!hasConsent()) return;
             const payload = Object.assign(getTrackingContext(eventName), {
                 event: eventName,
                 extra: extra || {}
