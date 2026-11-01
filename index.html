@@ -327,7 +327,7 @@
     <!-- Aviso (final do site, fora do cartão) -->
     <div class="w-full max-w-md mx-auto mt-3 text-center px-2">
         <p class="text-xs text-gray-400 font-medium">Nosso segredinho... 🤫🐾</p>
-        <p class="text-[11px] text-gray-400 mt-1 leading-relaxed">Ao continuar, aceitas o uso de cookies.</p>
+        <p class="text-[11px] text-gray-400 mt-1 leading-relaxed">Cookies só se tu deixares, tá? 🤍</p>
         <p class="text-[10px] text-gray-400 mt-2 leading-relaxed">
             <a href="privacidade.html" class="hover:text-pink-400 hover:underline underline-offset-2">Política de Privacidade</a>
             <span class="mx-1">·</span>
@@ -338,6 +338,26 @@
     </div>
 
     </div><!-- /siteContent -->
+
+    <!-- Consentimento de cookies (RGPD) — só aparece uma vez -->
+    <div id="cookieBanner" class="hidden fixed bottom-0 inset-x-0 z-40 p-3">
+        <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-pink-100 p-4">
+            <p class="text-sm text-textDark font-semibold">Posso usar cookies? 🍪</p>
+            <p class="text-xs text-textSoft mt-1 leading-relaxed">
+                Uso só pra perceber o que funciona melhor por aqui. Se recusares, a página fica igualzinha.
+                Detalhes na
+                <a href="privacidade.html" class="text-pink-400 underline underline-offset-2">Política de Privacidade</a>.
+            </p>
+            <div class="flex gap-2 mt-3">
+                <button id="cookieAccept" class="flex-1 rounded-full bg-gradient-to-r from-pink-400 to-rose-400 py-2.5 text-sm font-bold text-white shadow-md shadow-pink-200 hover:shadow-lg hover:shadow-pink-300/70 active:scale-95 transition-all">
+                    Aceitar 🤍
+                </button>
+                <button id="cookieReject" class="flex-1 rounded-full bg-transparent border border-pink-200 py-2.5 text-sm font-medium text-textSoft hover:border-pink-300 hover:bg-white/70 active:scale-95 transition-all">
+                    Só essenciais
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Pergunta de idade (pequena, sobre a página) -->
     <div id="ageOverlay" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm">
