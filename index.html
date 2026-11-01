@@ -320,7 +320,7 @@
     <!-- Aviso (final do site, fora do cartão) -->
     <div class="w-full max-w-md mx-auto mt-3 text-center px-2">
         <p class="text-xs text-gray-400 font-medium">Nosso segredinho... 🤫🐾</p>
-        <p class="text-[11px] text-gray-400 mt-1 leading-relaxed">Cookies só se tu deixares, tá? 🤍</p>
+        <p class="text-[11px] text-gray-400 mt-1 leading-relaxed">Uso cookies só pra melhorar a tua experiência 🍪</p>
         <p class="text-[10px] text-gray-400 mt-2 leading-relaxed">
             <a href="privacidade.html" class="hover:text-pink-400 hover:underline underline-offset-2">Política de Privacidade</a>
             <span class="mx-1">·</span>
@@ -402,26 +402,7 @@
                 pixelsLoaded = true;
             }
 
-            // ---- Banner de cookies ----
-            const banner = document.getElementById('cookieBanner');
-
-            function saveConsent(value) {
-                try { localStorage.setItem('gaby_consent', value); } catch (error) {}
-                banner.classList.add('hidden');
-                if (value === 'granted') {
-                    loadConfiguredPixels();
-                    gabyTrack('page_view');
-                }
-            }
-
-            if (!getConsent()) {
-                banner.classList.remove('hidden');
-            } else if (getConsent() === 'granted') {
-                loadConfiguredPixels();
-            }
-
-            document.getElementById('cookieAccept').addEventListener('click', function () { saveConsent('granted'); });
-            document.getElementById('cookieReject').addEventListener('click', function () { saveConsent('denied'); });
+            loadConfiguredPixels();
         })();
     </script>
 
