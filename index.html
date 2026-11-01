@@ -114,11 +114,19 @@
             }
         }
 
-        const VISITOR_ID = getVisitorId();
-        const FIRST_SEEN = detectFirstSeen();
+        // Só cria identificadores depois do consentimento (RGPD).
+        let VISITOR_ID = null;
+        let FIRST_SEEN = null;
+        function ensureIds() {
+            if (VISITOR_ID === null) {
+                VISITOR_ID = getVisitorId();
+                FIRST_SEEN = detectFirstSeen();
+            }
+        }
 
         // Reúne o máximo de contexto possível do visitante
         function getTrackingContext(eventLabel) {
+            ensureIds();
             const params = new URLSearchParams(window.location.search);
             const campaign = {};
             ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']
