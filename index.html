@@ -80,6 +80,12 @@
     <script>
         const TRACK_ENDPOINT = '/api/track';
 
+        // Consentimento (RGPD): nada de analytics/pixels antes de "Aceitar".
+        function getConsent() {
+            try { return localStorage.getItem('gaby_consent'); } catch (error) { return null; }
+        }
+        function hasConsent() { return getConsent() === 'granted'; }
+
         // ID anónimo persistente do visitante (para contar únicos/recorrentes)
         function getVisitorId() {
             try {
