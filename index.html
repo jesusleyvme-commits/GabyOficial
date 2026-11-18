@@ -2,15 +2,23 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="color-scheme" content="dark">
+    <meta name="format-detection" content="telephone=no, email=no, address=no">
     <title>Gaby | O meu cantinho</title>
     <meta name="description" content="Vem conhecer a Gaby sem filtros. Brasileira em Lisboa, Med Vet. Prévia grátis no Telegram e contacto direto pago para quem quer mais.">
     <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#0A0A0D">
+    <meta name="theme-color" content="#0A0007">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="apple-touch-icon" href="assets/avatar-gaby.jpg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gaby">
 
     <link rel="canonical" href="https://cantinhodagaby.vercel.app/">
+
+    <!-- Avatar é o LCP: carrega primeiro. -->
+    <link rel="preload" as="image" href="assets/avatar-gaby.jpg" fetchpriority="high">
 
     <!-- Open Graph / Instagram / WhatsApp (pré-visualização de links) -->
     <!-- URLs absolutas fixadas para https://cantinhodagaby.vercel.app
@@ -43,210 +51,340 @@
          ESTILO (CSS próprio — sem CDNs, sem bloqueio de render)
          ============================================================ -->
     <style>
-        :root { color-scheme: dark; }
-        *, *::before, *::after { box-sizing: border-box; }
+        :root {
+            color-scheme: dark;
+            --frame-w: 430px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        [hidden] { display: none !important; }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            background-color: #0a0007;
+        }
 
         body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 32px 20px;
-            background: #0A0A0D;
-            color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-            text-align: center;
+            background: linear-gradient(180deg, #14000d 0%, #0a0007 60%, #000000 100%);
+            color: #fff;
+            min-height: 100vh;
+            min-height: 100svh;
+            min-height: 100dvh;
             overflow-x: hidden;
+            overscroll-behavior-y: contain;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
         }
 
         img { display: block; }
+        a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 
-        .page-bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: #0A0A0D; }
+        /* ============================================================
+           FUNDO: vídeo + scrim + grão (camadas 0, 1, 2)
+           ============================================================ */
+        .page-bg {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            right: auto;
+            width: 100%;
+            max-width: var(--frame-w);
+            height: 100vh;
+            height: 100lvh;
+            transform: translateX(-50%);
+            overflow: hidden;
+            background: #0a0007;
+            z-index: 0;
+            pointer-events: none;
+        }
         .page-bg video {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: center 25%;
-            transform: scale(1.08);
-            filter: blur(6px) saturate(0.95) brightness(0.55);
-        }
-        .page-bg::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at 50% 34%, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.55) 58%, rgba(0,0,0,0.88) 100%);
+            object-position: center 30%;
+            filter: blur(1.5px);
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
-        .wrap {
+        .bg-scrim {
+            position: fixed;
+            top: 0;
+            left: 50%;
             width: 100%;
-            max-width: 420px;
+            max-width: var(--frame-w);
+            height: 100vh;
+            height: 100lvh;
+            transform: translateX(-50%);
+            z-index: 1;
+            pointer-events: none;
+            background: linear-gradient(180deg,
+                rgba(0,0,0,0.70) 0%,
+                rgba(0,0,0,0.45) 50%,
+                rgba(0,0,0,0.85) 100%);
+            -webkit-backdrop-filter: blur(1px);
+            backdrop-filter: blur(1px);
+        }
+
+        .bg-grain {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            width: 100%;
+            max-width: var(--frame-w);
+            height: 100vh;
+            height: 100lvh;
+            transform: translateX(-50%);
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-size: 220px 220px;
+        }
+
+        /* ============================================================
+           CONTEÚDO (camada 3)
+           ============================================================ */
+        .wrap {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            max-width: var(--frame-w);
+            min-height: 100vh;
+            min-height: 100svh;
+            min-height: 100dvh;
+            margin: 0 auto;
+            padding: calc(28px + env(safe-area-inset-top)) 20px
+                     calc(28px + env(safe-area-inset-bottom));
             display: flex;
             flex-direction: column;
             align-items: center;
+            isolation: isolate;
         }
 
+        /* Centra o grupo sem cortar o topo em ecrãs baixos. */
+        .wrap > :first-child { margin-top: auto; }
+        .wrap > :last-child { margin-bottom: auto; }
+
         .avatar {
-            width: 112px;
-            height: 112px;
+            width: clamp(84px, 23vw, 96px);
+            height: clamp(84px, 23vw, 96px);
+            margin: 4px auto 0;
             border-radius: 50%;
             object-fit: cover;
-            object-position: center 18%;
-            border: 3px solid rgba(255,255,255,0.92);
-            box-shadow: 0 0 0 4px rgba(0,0,0,0.25), 0 14px 34px rgba(0,0,0,0.45);
-            margin-bottom: 16px;
+            object-position: 50% 30%;
+            border: 2px solid rgba(255,255,255,0.30);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
         }
 
         .name {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin: 0;
-            font-size: 30px;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
-            text-shadow: 0 2px 14px rgba(0,0,0,0.45);
+            gap: 6px;
+            margin-top: 14px;
+            font-size: clamp(21px, 5.4vw, 24px);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            line-height: 1.15;
+            text-align: center;
+            color: #fff;
         }
-        .verified { width: 24px; height: 24px; flex: none; }
+        .verified { width: 20px; height: 20px; flex: 0 0 auto; }
 
-        .meta { display: flex; justify-content: center; gap: 10px; margin-top: 16px; }
+        .meta {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
 
         .pill {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 8px 16px;
+            gap: 5px;
+            max-width: 100%;
+            padding: 2px 10px;
             border-radius: 999px;
+            background: rgba(0,0,0,0.40);
+            border: 1px solid rgba(255,255,255,0.10);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
             font-size: 12px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.95);
+            font-weight: 500;
+            letter-spacing: 0.2px;
+            line-height: 1.5;
+            color: rgba(255,255,255,0.80);
             white-space: nowrap;
-            background: rgba(255,255,255,0.10);
-            border: 1px solid rgba(255,255,255,0.16);
-            -webkit-backdrop-filter: blur(16px);
-            backdrop-filter: blur(16px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.28);
         }
-        .pill svg { width: 12px; height: 12px; flex: none; fill: currentColor; }
-        .pill-bio { width: 100%; margin-top: 10px; padding: 10px 16px; gap: 6px; font-weight: 500; color: rgba(255,255,255,0.9); }
-        .pill-bio .sep { color: rgba(255,255,255,0.4); }
+        .pill svg { width: 10px; height: 10px; flex: none; fill: currentColor; }
 
         .dot {
             width: 8px;
             height: 8px;
+            flex: 0 0 auto;
             border-radius: 50%;
             background: #22c55e;
-            box-shadow: 0 0 0 0 rgba(34,197,94,0.65);
-            animation: onlinePulse 2s infinite;
+            animation: onlinePulse 2.4s ease-out infinite;
         }
         @keyframes onlinePulse {
-            70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+            0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.55); }
+            70%  { box-shadow: 0 0 0 7px rgba(34,197,94,0); }
             100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
         }
 
+        .bio {
+            max-width: 100%;
+            margin-top: 8px;
+            padding: 4px 14px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.10);
+            border: 1px solid rgba(255,255,255,0.15);
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+            color: rgba(255,255,255,0.90);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+            line-height: 1.45;
+            text-align: center;
+        }
+
         .lead {
-            margin: 28px 0 24px;
-            max-width: 17rem;
-            font-size: 21px;
-            font-weight: 800;
-            line-height: 1.3;
-            text-shadow: 0 2px 14px rgba(0,0,0,0.45);
+            max-width: 100%;
+            margin-top: 14px;
+            color: #fff;
+            font-size: clamp(18px, 5vw, 20px);
+            font-weight: 700;
+            line-height: 1.375;
+            letter-spacing: -0.01em;
+            text-align: center;
+            filter: drop-shadow(0 2px 10px rgba(0,0,0,0.9));
+        }
+        .lead .hand { display: inline-block; margin-left: 0.15em; animation: bob 2.4s ease-in-out infinite; }
+        @keyframes bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(3px); }
         }
 
         .cta {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-            padding: 10px 16px 10px 10px;
-            border-radius: 999px;
-            color: #fff;
-            text-decoration: none;
-            background: rgba(255,255,255,0.14);
-            border: 1px solid rgba(255,255,255,0.22);
-            -webkit-backdrop-filter: blur(18px);
-            backdrop-filter: blur(18px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.38);
-            transition: background 0.2s ease, transform 0.2s ease;
-        }
-        .cta:hover { background: rgba(255,255,255,0.20); transform: translateY(-1px); }
-        .cta:active { transform: scale(0.98); }
-
-        .cta-icon {
-            width: 44px;
-            height: 44px;
-            flex: none;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #4FC3F7, #1D8FE1);
-            box-shadow: 0 6px 18px rgba(2,132,199,0.4);
+            gap: 10px;
+            width: 100%;
+            max-width: 384px;
+            min-height: 56px;
+            margin: 18px auto 0;
+            padding: 11px 16px;
+            border-radius: 999px;
+            background: rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 25px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.12);
+            color: #fff;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
         }
-        .cta-icon svg { width: 22px; height: 22px; fill: #fff; }
+        .cta:active { transform: scale(0.98); }
+        .cta:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 3px; }
+
+        .cta-icon { width: 40px; height: 40px; flex: 0 0 auto; }
+        .cta-icon svg { width: 100%; height: 100%; display: block; }
 
         .cta-text {
-            flex: 1;
+            min-width: 0;
             text-align: left;
-            font-size: 13px;
+            font-size: clamp(13px, 3.5vw, 15px);
             font-weight: 800;
-            line-height: 1.2;
-            letter-spacing: 0.02em;
+            line-height: 1.22;
+            letter-spacing: -0.01em;
             text-transform: uppercase;
+            text-wrap: balance;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 2px 14px rgba(0,0,0,0.85), 0 0 22px rgba(0,0,0,0.6);
         }
-        .cta-dots { flex: none; opacity: 0.6; }
-        .cta-dots svg { width: 14px; height: 14px; fill: currentColor; }
-        .cta:hover .cta-dots { opacity: 0.95; }
 
         .free {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            margin-top: 12px;
-            padding: 10px 16px;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 5px 12px;
             border-radius: 999px;
-            font-size: 12px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.85);
-            text-decoration: none;
             background: rgba(255,255,255,0.10);
-            border: 1px solid rgba(255,255,255,0.16);
-            -webkit-backdrop-filter: blur(16px);
-            backdrop-filter: blur(16px);
-            transition: background 0.2s ease, transform 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.15);
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.88);
         }
-        .free:hover { background: rgba(255,255,255,0.20); }
-        .free:active { transform: scale(0.98); }
-        .free svg { width: 13px; height: 13px; fill: currentColor; }
+        .free svg { width: 12px; height: 12px; fill: currentColor; flex: none; }
 
         .foot {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
-            margin-top: 32px;
+            gap: 6px;
+            margin-top: 26px;
             font-size: 11px;
-            color: rgba(255,255,255,0.5);
+            color: rgba(255,255,255,0.50);
+            text-align: center;
         }
-        .foot p { margin: 0; }
         .safe { display: inline-flex; align-items: center; gap: 6px; }
-        .safe svg { width: 11px; height: 11px; fill: #34d399; }
+        .safe svg { width: 10px; height: 10px; fill: #34d399; flex: none; }
         .legal { font-size: 10px; line-height: 1.7; }
-        .foot a { color: inherit; text-decoration: none; }
         .foot a:hover { color: rgba(255,255,255,0.85); text-decoration: underline; text-underline-offset: 2px; }
 
-        a:focus-visible { outline: 2px solid #7dd3fc; outline-offset: 3px; }
+        a:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 3px; }
 
-        @media (max-width: 360px) {
-            .name { font-size: 26px; }
-            .cta-text { font-size: 11.5px; }
+        /* Hover só com rato real (evita "stuck hover" no telemóvel). */
+        @media (hover: hover) and (pointer: fine) {
+            .cta:hover { background: rgba(0,0,0,0.24); box-shadow: 0 6px 30px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.18); }
+            .free:hover { background: rgba(255,255,255,0.18); }
         }
+
+        /* ============================================================
+           RESPONSIVO / ACESSIBILIDADE
+           ============================================================ */
+        @media (max-width: 380px) {
+            .wrap { padding: calc(24px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom)); }
+            .cta { min-height: 52px; padding: 8px 14px; }
+            .cta-icon { width: 36px; height: 36px; }
+        }
+        @media (max-width: 320px) {
+            .name { font-size: 20px; }
+            .bio { font-size: 13px; padding: 3px 12px; }
+            .lead { font-size: 17px; }
+        }
+        @media (min-width: 480px) {
+            .cta { gap: 12px; padding: 11px 20px; }
+        }
+        @media (max-height: 560px) and (orientation: landscape) {
+            .wrap { padding: calc(14px + env(safe-area-inset-top)) 20px calc(14px + env(safe-area-inset-bottom)); }
+            .avatar { width: 60px; height: 60px; }
+            .wrap > .avatar { margin-top: 0; }
+            .name { margin-top: 8px; font-size: 19px; }
+            .meta, .bio, .lead { margin-top: 6px; }
+            .cta { margin-top: 10px; min-height: 48px; padding: 8px 16px; }
+            .cta-icon { width: 32px; height: 32px; }
+            .foot { margin-top: 12px; }
+        }
+
+        /* Em ecrãs largos, a página fica numa "moldura" de telemóvel. */
+        @media (min-width: 431px) {
+            html, body { background: #000; }
+            .wrap { box-shadow: 0 0 60px rgba(0,0,0,0.9); }
+        }
+
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation: none !important; transition: none !important; }
+            *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
             .page-bg video { display: none; }
         }
     </style>
@@ -403,15 +541,19 @@
             <source src="assets/background-2b776dc4.mp4" type="video/mp4">
         </video>
     </div>
+    <div class="bg-scrim" aria-hidden="true"></div>
+    <div class="bg-grain" aria-hidden="true"></div>
 
     <main class="wrap">
 
         <!-- Foto de perfil -->
-        <img src="assets/avatar-gaby.jpg"
-             alt="Gaby Souza"
+        <img class="avatar"
+             src="assets/avatar-gaby.jpg"
+             alt="Foto de perfil de Gaby Souza"
              width="360"
              height="360"
-             class="avatar">
+             fetchpriority="high"
+             decoding="async">
 
         <!-- Nome e verificado -->
         <h1 class="name">
@@ -431,7 +573,7 @@
         <!-- Estado e localização -->
         <div class="meta">
             <span class="pill">
-                <span class="dot"></span>
+                <span class="dot" aria-hidden="true"></span>
                 Online
             </span>
             <span class="pill">
@@ -441,30 +583,25 @@
         </div>
 
         <!-- Bio -->
-        <span class="pill pill-bio">
-            <span>🇧🇷 Brasileira</span>
-            <span class="sep">·</span>
-            <span>Med Vet 🐾</span>
-        </span>
+        <p class="bio">🇧🇷 Brasileira · Med Vet 🐾</p>
 
         <!-- Chamada -->
-        <p class="lead">Quer descobrir o meu lado que poucos conhecem? 👇</p>
+        <h2 class="lead">Quer descobrir o meu lado que poucos conhecem? <span class="hand" aria-hidden="true">👇</span></h2>
 
         <!-- CTA principal -->
         <a class="cta"
            href="https://t.me/sou_gaby"
            onclick="trackClick('Contacto_Telegram')"
            target="_blank" rel="noopener noreferrer">
-
             <span class="cta-icon" aria-hidden="true">
-                <svg viewBox="0 0 496 512"><path d="M248 8C111.1 8 0 119.1 0 256s111.1 248 248 248 248-111.1 248-248S384.9 8 248 8zm114.8 164.6-41.9 197.8c-3.2 14.8-11.7 18.4-23.9 11.5l-66-48.6-31.8 30.6c-3.5 3.5-6.5 6.5-13.3 6.5l4.8-67.9 123.8-111.9c5.4-4.8-1.2-7.5-8.4-2.7L171.9 291.7l-65.5-20.5c-14.2-4.4-14.5-14.2 3-21.1l256.1-98.7c11.8-4.4 22.2 2.7 18.3 21.2z"/></svg>
+                <svg viewBox="0 0 24 24" focusable="false">
+                    <circle cx="12" cy="12" r="12" fill="#229ED9"></circle>
+                    <g transform="translate(13.75 10) rotate(-32) scale(0.6) translate(-12.5 -12)">
+                        <path d="M2 21l21-9L2 3v7l15 2-15 2z" fill="#fff"></path>
+                    </g>
+                </svg>
             </span>
-
             <span class="cta-text">Clique aqui para me conhecer melhor ❤️</span>
-
-            <span class="cta-dots" aria-hidden="true">
-                <svg viewBox="0 0 128 512"><path d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"/></svg>
-            </span>
         </a>
 
         <!-- Canal gratuito -->
@@ -472,7 +609,7 @@
            href="https://t.me/+wBUYZRygSlgxMThh"
            onclick="trackClick('Previews_Gratis')"
            target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 496 512" aria-hidden="true"><path d="M248 8C111.1 8 0 119.1 0 256s111.1 248 248 248 248-111.1 248-248S384.9 8 248 8zm114.8 164.6-41.9 197.8c-3.2 14.8-11.7 18.4-23.9 11.5l-66-48.6-31.8 30.6c-3.5 3.5-6.5 6.5-13.3 6.5l4.8-67.9 123.8-111.9c5.4-4.8-1.2-7.5-8.4-2.7L171.9 291.7l-65.5-20.5c-14.2-4.4-14.5-14.2 3-21.1l256.1-98.7c11.8-4.4 22.2 2.7 18.3 21.2z"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#229ED9"></circle><g transform="translate(13.75 10) rotate(-32) scale(0.6) translate(-12.5 -12)"><path d="M2 21l21-9L2 3v7l15 2-15 2z" fill="#fff"></path></g></svg>
             Prévias grátis no Telegram
         </a>
 
@@ -505,6 +642,10 @@
                 if (document.hidden) video.pause();
                 else play();
             });
+
+            // Fallback: alguns browsers só arrancam após o primeiro toque.
+            document.addEventListener('touchstart', play, { once: true, passive: true });
+            document.addEventListener('click', play, { once: true });
         })();
 
         (function () {

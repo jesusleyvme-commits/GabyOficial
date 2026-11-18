@@ -101,8 +101,9 @@ function isAllowed(robotsText, agent, targetPath) {
 
 function localFileFor(urlPath) {
   const clean = decodeURIComponent(String(urlPath).split("?")[0]);
-  const file = path.join(ROOT, clean.replace(/^\/+/, ""));
-  return file.startsWith(ROOT) ? file : null;
+  const file = path.resolve(ROOT, clean.replace(/^[/\\]+/, ""));
+  const relative = path.relative(ROOT, file);
+  return relative && !relative.startsWith("..") && !path.isAbsolute(relative) ? file : null;
 }
 
 function report(items) {

@@ -192,6 +192,21 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    // Espelha a Vercel: nada de dotfiles (.env.local) nem código-fonte/config.
+    const segments = relative.split(/[\\/]+/).filter(Boolean);
+    const PRIVATE_DIRS = new Set(["api", "scripts", "tests", "node_modules"]);
+    const PRIVATE_FILES = new Set(["package.json", "package-lock.json", "vercel.json", "opencode.json"]);
+    const firstSegment = (segments[0] || "").toLowerCase();
+    if (
+      segments.some((segment) => segment.startsWith(".")) ||
+      PRIVATE_DIRS.has(firstSegment) ||
+      PRIVATE_FILES.has(firstSegment)
+    ) {
+      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      res.end("404 Not Found");
+      return;
+    }
+
     if (fs.existsSync(file) && fs.statSync(file).isDirectory()) {
       file = path.join(file, "index.html");
     }
