@@ -6,6 +6,7 @@
 //   IP_SALT (opcional, para anonimizar o IP)
 
 const crypto = require("crypto");
+const { sanitize, parseExtra, redisPipeline, clientIp, hashIp } = require("./_lib/http");
 
 const EVENTS_KEY = "gaby:events";
 const MAX_EVENTS = 10000;
@@ -13,6 +14,7 @@ const MAX_EVENTS = 10000;
 // Limite simples por IP (por instância). Serve para travar spam básico.
 const RATE_LIMIT = 120;
 const RATE_WINDOW_MS = 60 * 1000;
+const RATE_MAX_KEYS = 5000;
 const rateBuckets = new Map();
 
 function isRateLimited(key) {
@@ -24,7 +26,7 @@ function isRateLimited(key) {
   }
   bucket.count += 1;
 
-  if (rateBuckets.size > 5000) {
+  if (rateBuckets.size > RATE_MAX_KEYS) {
     for (const [bucketKey, value] of rateBuckets) {
       if (now - value.start > RATE_WINDOW_MS) rateBuckets.delete(bucketKey);
     }
@@ -32,22 +34,6 @@ function isRateLimited(key) {
 
   return bucket.count > RATE_LIMIT;
 }
-
-function parseExtra(value) {
-  if (!value || typeof value !== "object") return {};
-  try {
-    const parsed = JSON.parse(sanitize(JSON.stringify(value), 2000));
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch (error) {
-    return {};
-  }
-}
-
-const sanitize = (value, max = 200) =>
-  String(value ?? "")
-    .replace(/[\u0000-\u001F\u007F]/g, "")
-    .replace(/[<>]/g, "")
-    .slice(0, max);
 
 const decode = (value) => {
   try {
@@ -57,18 +43,20 @@ const decode = (value) => {
   }
 };
 
+const PRIVATE_IP = /^(?:127\.|10\.|192\.168\.|169\.254\.|0\.0\.0\.0|::1|f[cd][0-9a-f]{2}:|fe80:)/i;
+const PRIVATE_172 = /^172\.(?:1[6-9]|2\d|3[01])\./;
+
 // Fallback de geolocalização por IP (usado quando não há headers da Vercel).
 // ipapi.co tem tier gratuito; em produção na Vercel os headers já trazem geo.
 async function geoFromIp(ip) {
-  if (!ip || /^(127\.|10\.|192\.168\.|::1|0\.0\.0\.0)/.test(ip)) return {};
+  if (!ip || PRIVATE_IP.test(ip) || PRIVATE_172.test(ip)) return {};
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 1200);
   try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 1200);
     const response = await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`, {
       signal: controller.signal,
       headers: { "User-Agent": "gaby-landing/1.0" },
     });
-    clearTimeout(timer);
     if (!response.ok) return {};
     const data = await response.json();
     return {
@@ -81,20 +69,9 @@ async function geoFromIp(ip) {
     };
   } catch (error) {
     return {};
+  } finally {
+    clearTimeout(timer);
   }
-}
-
-async function redis(command, ...args) {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) throw new Error("Upstash Redis não configurado");
-
-  const path = [command, ...args.map((a) => encodeURIComponent(a))].join("/");
-  const response = await fetch(`${url}/${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!response.ok) throw new Error(`Redis ${response.status}`);
-  return response.json();
 }
 
 module.exports = async (req, res) => {
@@ -115,12 +92,8 @@ module.exports = async (req, res) => {
   }
   if (!body || typeof body !== "object") body = {};
 
-  const forwarded = String(req.headers["x-forwarded-for"] || "");
-  const ip = forwarded.split(",")[0].trim();
-  const salt = process.env.IP_SALT || "gaby-default-salt";
-  const ipHash = ip
-    ? crypto.createHash("sha256").update(ip + salt).digest("hex").slice(0, 32)
-    : null;
+  const ip = clientIp(req);
+  const ipHash = hashIp(ip);
 
   if (isRateLimited(ipHash || "anonimo")) {
     res.status(429).json({ ok: false, error: "rate_limited" });
@@ -147,8 +120,7 @@ module.exports = async (req, res) => {
     timezone: req.headers["x-vercel-ip-timezone"] || "",
   };
   if (!geo.country) {
-    const fallback = await geoFromIp(ip);
-    geo = { ...geo, ...fallback };
+    geo = { ...geo, ...(await geoFromIp(ip)) };
   }
 
   const record = {
@@ -179,8 +151,10 @@ module.exports = async (req, res) => {
   };
 
   try {
-    await redis("LPUSH", EVENTS_KEY, JSON.stringify(record));
-    await redis("LTRIM", EVENTS_KEY, "0", String(MAX_EVENTS - 1));
+    await redisPipeline([
+      ["LPUSH", EVENTS_KEY, JSON.stringify(record)],
+      ["LTRIM", EVENTS_KEY, "0", String(MAX_EVENTS - 1)],
+    ]);
   } catch (error) {
     console.error("track_error", error.message);
     // Não rebenta a experiência do utilizador se o storage falhar.
