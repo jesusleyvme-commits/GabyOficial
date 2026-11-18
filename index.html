@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gaby | O meu cantinho</title>
-    <meta name="description" content="Vem conhecer a Gaby sem filtros. Universitária brasileira em Lisboa. Prévia grátis no Telegram e contacto direto pago para quem quer mais.">
+    <meta name="description" content="Vem conhecer a Gaby sem filtros. Brasileira em Lisboa, Med Vet. Prévia grátis no Telegram e contacto direto pago para quem quer mais.">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#0A0A0D">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -19,19 +19,19 @@
     <meta property="og:url" content="https://cantinhodagaby.vercel.app/">
     <meta property="og:site_name" content="Gaby">
     <meta property="og:title" content="Gaby | O meu cantinho">
-    <meta property="og:description" content="Vem conhecer a Gaby sem filtros. Universitária brasileira em Lisboa. Prévia grátis no Telegram e contacto direto pago para quem quer mais.">
+    <meta property="og:description" content="Vem conhecer a Gaby sem filtros. Brasileira em Lisboa, Med Vet. Prévia grátis no Telegram e contacto direto pago para quem quer mais.">
     <meta property="og:image" content="https://cantinhodagaby.vercel.app/assets/og.jpg">
     <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Gaby, estudante brasileira em Lisboa">
+    <meta property="og:image:alt" content="Gaby Souza, brasileira em Lisboa">
     <meta property="og:locale" content="pt_PT">
     <meta property="og:locale:alternate" content="pt_BR">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Gaby | O meu cantinho">
-    <meta name="twitter:description" content="Vem conhecer a Gaby sem filtros. Universitária brasileira em Lisboa. Prévia grátis no Telegram e contacto direto pago para quem quer mais.">
+    <meta name="twitter:description" content="Vem conhecer a Gaby sem filtros. Brasileira em Lisboa, Med Vet. Prévia grátis no Telegram e contacto direto pago para quem quer mais.">
     <meta name="twitter:image" content="https://cantinhodagaby.vercel.app/assets/og.jpg">
-    <meta name="twitter:image:alt" content="Gaby, estudante brasileira em Lisboa">
+    <meta name="twitter:image:alt" content="Gaby Souza, brasileira em Lisboa">
 
     <!-- Verificação de domínio da Meta (Instagram/Facebook):
          gera o código em business.facebook.com > Configurações da conta > Domínios
@@ -40,6 +40,11 @@
     -->
 
     <!-- Tailwind CSS (Framework de estilos) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome (Ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- ============================================================
          ESTILO VISUAL (fundo desfocado + cartões de vidro)
          ============================================================ -->
@@ -89,114 +94,6 @@
             100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
         }
     </style>
-</head>
-
-<body class="text-white font-sans antialiased min-h-screen flex flex-col items-center justify-center p-5">
-
-    <!-- Fundo desfocado -->
-    <div class="page-bg" aria-hidden="true">
-        <img src="assets/avatar.jpg" alt="">
-    </div>
-
-    <!-- Conteúdo principal -->
-    <div id="siteContent" class="w-full flex flex-col items-center">
-
-    <!-- Container Principal (Formato Telemóvel) -->
-    <div class="w-full max-w-[420px] flex flex-col items-center text-center">
-
-        <!-- Foto de perfil -->
-        <img src="assets/avatar.jpg"
-             alt="Gaby Souza"
-             style="object-position: center 18%;"
-             class="avatar-ring w-28 h-28 mx-auto rounded-full object-cover mb-4">
-
-        <!-- Nome e verificado -->
-        <h1 class="flex items-center justify-center gap-2 text-3xl sm:text-[2rem] font-extrabold tracking-tight drop-shadow-md">
-            <span>Gaby Souza</span>
-            <svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" aria-label="Conta verificada" role="img">
-                <defs>
-                    <linearGradient id="verifiedGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0" stop-color="#4BA8FF"/>
-                        <stop offset="1" stop-color="#1D7FEB"/>
-                    </linearGradient>
-                </defs>
-                <path fill="url(#verifiedGrad)" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/>
-                <path d="m9 12 2 2 4-4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </h1>
-
-        <!-- Estado e localização -->
-        <div class="mt-4 flex items-center justify-center gap-2.5">
-            <span class="glass inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white/95">
-                <span class="dot-online inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
-                Online
-            </span>
-            <span class="glass inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white/95">
-                <i class="fa-solid fa-location-dot text-[11px]"></i>
-                Lisboa, PT
-            </span>
-        </div>
-
-        <!-- Bio -->
-        <div class="mt-2.5 w-full">
-            <span class="glass inline-flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-xs font-medium text-white/90">
-                <span>🇧🇷 Brasileira</span>
-                <span class="text-white/40">·</span>
-                <span>Med Vet 🐾</span>
-            </span>
-        </div>
-
-        <!-- Chamada -->
-        <p class="mt-7 mb-6 max-w-[17rem] text-xl sm:text-[22px] font-extrabold leading-snug drop-shadow-md">
-            Quer descobrir o meu lado que poucos conhecem? <span class="inline-block">👇</span>
-        </p>
-
-        <!-- CTA principal -->
-        <a href="https://t.me/sou_gaby"
-           onclick="trackClick('Contacto_Telegram')"
-           target="_blank" rel="noopener noreferrer"
-           class="glass-strong flex w-full items-center gap-3 rounded-full p-2.5 pr-4 transition-all duration-200 hover:bg-white/20 hover:-translate-y-0.5 active:scale-[0.98] group">
-
-            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#4FC3F7] to-[#1D8FE1] shadow-lg shadow-sky-900/40">
-                <i class="fa-brands fa-telegram text-xl text-white"></i>
-            </span>
-
-            <span class="flex-grow text-left text-[12.5px] sm:text-[13px] font-extrabold uppercase leading-tight tracking-wide text-white">
-                Clique aqui para me conhecer melhor ❤️
-            </span>
-
-            <span class="shrink-0 pl-1 text-white/60 group-hover:text-white/90 transition-colors" aria-hidden="true">
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-            </span>
-        </a>
-
-        <!-- Canal gratuito -->
-        <a href="https://t.me/+wBUYZRygSlgxMThh"
-           onclick="trackClick('Previews_Gratis')"
-           target="_blank" rel="noopener noreferrer"
-           class="glass mt-3 inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-xs font-semibold text-white/85 transition-all duration-200 hover:bg-white/20 active:scale-[0.98]">
-            <i class="fa-brands fa-telegram text-[13px]"></i>
-            Prévias grátis no Telegram
-        </a>
-
-        <!-- Rodapé -->
-        <div class="mt-8 flex flex-col items-center gap-2 text-[11px] text-white/50">
-            <p class="inline-flex items-center gap-1.5">
-                <i class="fa-solid fa-lock text-emerald-400/80"></i>
-                Ligação segura · Contacto direto pago
-            </p>
-            <p class="text-[10px] leading-relaxed">
-                <a href="privacidade.html" class="hover:text-white/80 hover:underline underline-offset-2">Política de Privacidade</a>
-                <span class="mx-1">·</span>
-                <a href="termos.html" class="hover:text-white/80 hover:underline underline-offset-2">Termos de Uso</a>
-                <span class="mx-1">·</span>
-                <a href="https://t.me/sou_gaby" target="_blank" rel="noopener noreferrer" class="hover:text-white/80 hover:underline underline-offset-2">Contacto</a>
-            </p>
-        </div>
-
-    </div>
-
-    </div><!-- /siteContent -->
 
     <!-- ============================================================
          RASTREIO / PIXELS - só carregam com IDs REAIS e com consentimento.
@@ -350,141 +247,109 @@
     </script>
 </head>
 
-<body class="bg-brandPink text-textDark font-sans antialiased min-h-screen flex flex-col items-center justify-center p-4">
+<body class="text-white font-sans antialiased min-h-screen flex flex-col items-center justify-center px-5 py-8">
+
+    <!-- Fundo desfocado -->
+    <div class="page-bg" aria-hidden="true">
+        <img src="assets/avatar.jpg" alt="">
+    </div>
 
     <!-- Conteúdo principal -->
     <div id="siteContent" class="w-full flex flex-col items-center">
 
     <!-- Container Principal (Formato Telemóvel) -->
-    <div class="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden p-6 border border-pink-100 relative">
+    <div class="w-full max-w-[420px] flex flex-col items-center text-center">
 
-        <!-- Secção de Perfil -->
-        <div class="flex flex-col items-center text-center mb-6">
-            <!-- FOTO DE PERFIL: Substitui o 'src' por uma selfie casual no espelho (com camisola larga/quarto ao fundo) -->
-            <img src="assets/avatar.jpg"
-                 alt="Gaby"
-                 style="object-position: center 18%;"
-                 class="w-32 h-32 mx-auto rounded-full object-cover border-4 border-pink-50 mb-3 shadow-sm">
+        <!-- Foto de perfil -->
+        <img src="assets/avatar.jpg"
+             alt="Gaby Souza"
+             style="object-position: center 18%;"
+             class="avatar-ring w-28 h-28 mx-auto rounded-full object-cover mb-4">
 
-            <!-- Nome e Verificado -->
-            <h1 class="flex w-full items-center justify-center gap-2 text-center text-2xl font-bold">
-                <span>Gaby</span>
-                <!-- Ícone de Verificado (selo azul) -->
-                <svg class="w-7 h-7 shrink-0 drop-shadow-sm" viewBox="0 0 24 24" aria-label="Conta verificada" role="img">
-                    <defs>
-                        <linearGradient id="verifiedGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0" stop-color="#4BA8FF"/>
-                            <stop offset="1" stop-color="#1D7FEB"/>
-                        </linearGradient>
-                    </defs>
-                    <path fill="url(#verifiedGrad)" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/>
-                    <path d="m9 12 2 2 4-4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </h1>
+        <!-- Nome e verificado -->
+        <h1 class="flex items-center justify-center gap-2 text-3xl sm:text-[2rem] font-extrabold tracking-tight drop-shadow-md">
+            <span>Gaby Souza</span>
+            <svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" aria-label="Conta verificada" role="img">
+                <defs>
+                    <linearGradient id="verifiedGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#4BA8FF"/>
+                        <stop offset="1" stop-color="#1D7FEB"/>
+                    </linearGradient>
+                </defs>
+                <path fill="url(#verifiedGrad)" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/>
+                <path d="m9 12 2 2 4-4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </h1>
+
+        <!-- Estado e localização -->
+        <div class="mt-4 flex items-center justify-center gap-2.5">
+            <span class="glass inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white/95">
+                <span class="dot-online inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                Online
+            </span>
+            <span class="glass inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white/95">
+                <i class="fa-solid fa-location-dot text-[11px]"></i>
+                Lisboa, PT
+            </span>
         </div>
 
-        <!-- Biografia (Copy próximo e humano) -->
-        <div class="text-center mb-8 px-2">
-            <p class="font-bold text-textDark mb-2 text-sm">Não sou tão santa quanto pareço 🤫</p>
-
-            <div class="flex items-center justify-center gap-1.5 mb-2.5 text-[10px] font-semibold uppercase tracking-wide text-pink-500">
+        <!-- Bio -->
+        <div class="mt-2.5 w-full">
+            <span class="glass inline-flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-xs font-medium text-white/90">
                 <span>🇧🇷 Brasileira</span>
-                <span class="text-pink-200">•</span>
-                <span>Lisboa</span>
-                <span class="text-pink-200">•</span>
+                <span class="text-white/40">·</span>
                 <span>Med Vet 🐾</span>
-            </div>
+            </span>
+        </div>
 
-            <div class="space-y-1 text-[13px] text-textSoft leading-snug">
-                <p>Cansada da faculdade, me solto em segredo.</p>
-                <p>Vens por um motivo, ficas pela companhia. 🍷</p>
-            </div>
+        <!-- Chamada -->
+        <p class="mt-7 mb-6 max-w-[17rem] text-xl sm:text-[22px] font-extrabold leading-snug drop-shadow-md">
+            Quer descobrir o meu lado que poucos conhecem? <span class="inline-block">👇</span>
+        </p>
 
-            <div class="mt-3 pt-2.5 border-t border-pink-100">
-                <p class="text-[11px] font-semibold text-textDark">
-                    <i class="fa-solid fa-lock text-pink-400 mr-1"></i>
-                    Contacto direto pago, sem exceção.
-                </p>
-            </div>
-            <p class="mt-2 text-xs font-semibold text-pink-500">
-                Aguentas o meu lado sem filtros? <span class="inline-block animate-bounce">👇</span>
+        <!-- CTA principal -->
+        <a href="https://t.me/sou_gaby"
+           onclick="trackClick('Contacto_Telegram')"
+           target="_blank" rel="noopener noreferrer"
+           class="glass-strong flex w-full items-center gap-3 rounded-full p-2.5 pr-4 transition-all duration-200 hover:bg-white/20 hover:-translate-y-0.5 active:scale-[0.98] group">
+
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#4FC3F7] to-[#1D8FE1] shadow-lg shadow-sky-900/40">
+                <i class="fa-brands fa-telegram text-xl text-white"></i>
+            </span>
+
+            <span class="flex-grow text-left text-[12.5px] sm:text-[13px] font-extrabold uppercase leading-tight tracking-wide text-white">
+                Clique aqui para me conhecer melhor ❤️
+            </span>
+
+            <span class="shrink-0 pl-1 text-white/60 group-hover:text-white/90 transition-colors" aria-hidden="true">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </span>
+        </a>
+
+        <!-- Canal gratuito -->
+        <a href="https://t.me/+wBUYZRygSlgxMThh"
+           onclick="trackClick('Previews_Gratis')"
+           target="_blank" rel="noopener noreferrer"
+           class="glass mt-3 inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-xs font-semibold text-white/85 transition-all duration-200 hover:bg-white/20 active:scale-[0.98]">
+            <i class="fa-brands fa-telegram text-[13px]"></i>
+            Prévias grátis no Telegram
+        </a>
+
+        <!-- Rodapé -->
+        <div class="mt-8 flex flex-col items-center gap-2 text-[11px] text-white/50">
+            <p class="inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-lock text-emerald-400/80"></i>
+                Ligação segura · Contacto direto pago
+            </p>
+            <p class="text-[10px] leading-relaxed">
+                <a href="privacidade.html" class="hover:text-white/80 hover:underline underline-offset-2">Política de Privacidade</a>
+                <span class="mx-1">·</span>
+                <a href="termos.html" class="hover:text-white/80 hover:underline underline-offset-2">Termos de Uso</a>
+                <span class="mx-1">·</span>
+                <a href="https://t.me/sou_gaby" target="_blank" rel="noopener noreferrer" class="hover:text-white/80 hover:underline underline-offset-2">Contacto</a>
             </p>
         </div>
 
-        <!-- Botões de Ação -->
-        <div class="space-y-4 mb-8">
-
-            <!-- Botão 1: Canal gratuito -->
-            <a href="https://t.me/+wBUYZRygSlgxMThh"
-               onclick="trackClick('Previews_Gratis')"
-               target="_blank" rel="noopener noreferrer"
-               class="flex items-center p-4 bg-white border border-pink-200 rounded-2xl shadow-sm hover:shadow-lg hover:shadow-pink-200/60 hover:border-pink-300 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] group">
-
-                <div class="flex-shrink-0 w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mr-4 group-hover:bg-blue-100 transition-colors">
-                    <i class="fa-brands fa-telegram text-2xl"></i>
-                </div>
-
-                <div class="flex-grow text-left">
-                    <p class="font-bold text-textDark text-base">Meus vídeos escondidinhos 🙈</p>
-                    <p class="text-xs text-textSoft mt-0.5">Grupo grátis de prévias no Telegram.</p>
-                </div>
-
-                <div class="text-gray-300 group-hover:text-pink-300 transition-colors">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </div>
-            </a>
-
-            <!-- Botão 2: Contacto -->
-            <a href="https://t.me/sou_gaby"
-               onclick="trackClick('Contacto_Telegram')"
-               target="_blank" rel="noopener noreferrer"
-               class="flex items-center p-4 bg-gradient-to-r from-pink-50 to-rose-100 border border-pink-300 rounded-2xl shadow-md shadow-pink-200/60 hover:shadow-lg hover:shadow-pink-300/70 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] group">
-
-                <div class="flex-shrink-0 w-12 h-12 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center mr-4 group-hover:bg-pink-200 transition-colors">
-                    <i class="fa-solid fa-comment-dots text-xl"></i>
-                </div>
-
-                <div class="flex-grow text-left">
-                    <p class="font-bold text-textDark text-base">Chamar a Gaby agora ❤️</p>
-                    <p class="text-xs text-pink-500/80 mt-0.5 font-medium">Só para quem fala a sério. Acesso pago.</p>
-                </div>
-
-                <div class="text-pink-200 group-hover:text-pink-400 transition-colors">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </div>
-            </a>
-
-        </div>
-
-        <!-- Elementos de confiança (dentro do cartão) -->
-        <div class="mt-2 pt-4 border-t border-pink-100">
-            <div class="flex items-center justify-center gap-4 text-[11px] text-gray-400">
-                <span class="inline-flex items-center gap-1">
-                    <i class="fa-solid fa-lock text-emerald-400"></i> Ligação segura
-                </span>
-                <span class="inline-flex items-center gap-1">
-                    <i class="fa-solid fa-gift text-pink-300"></i> Conteúdo grátis
-                </span>
-                <a href="https://t.me/sou_gaby" target="_blank" rel="noopener noreferrer"
-                   class="inline-flex items-center gap-1 hover:text-pink-400">
-                    <i class="fa-solid fa-comment-dots"></i> Contacto
-                </a>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Aviso (final do site, fora do cartão) -->
-    <div class="w-full max-w-md mx-auto mt-3 text-center px-2">
-        <p class="text-xs text-gray-400 font-medium">Entra e vê por ti 🤍</p>
-        <p class="text-[11px] text-gray-400 mt-1 leading-relaxed">Uso cookies só pra melhorar a tua experiência 🍪</p>
-        <p class="text-[10px] text-gray-400 mt-2 leading-relaxed">
-            <a href="privacidade.html" class="hover:text-pink-400 hover:underline underline-offset-2">Política de Privacidade</a>
-            <span class="mx-1">·</span>
-            <a href="termos.html" class="hover:text-pink-400 hover:underline underline-offset-2">Termos de Uso</a>
-            <span class="mx-1">·</span>
-            <a href="https://t.me/sou_gaby" target="_blank" rel="noopener noreferrer" class="hover:text-pink-400 hover:underline underline-offset-2">Contacto</a>
-        </p>
     </div>
 
     </div><!-- /siteContent -->
