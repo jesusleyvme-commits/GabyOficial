@@ -8,7 +8,7 @@
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#0A0A0D">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="apple-touch-icon" href="assets/avatar.jpg">
+    <link rel="apple-touch-icon" href="assets/avatar-face.jpg">
 
     <link rel="canonical" href="https://cantinhodagaby.vercel.app/">
 
@@ -39,17 +39,29 @@
     <meta name="facebook-domain-verification" content="SEU_CODIGO_AQUI">
     -->
 
-    <!-- Tailwind CSS (Framework de estilos) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome (Ícones) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <!-- ============================================================
-         ESTILO VISUAL (fundo desfocado + cartões de vidro)
+         ESTILO (CSS próprio — sem CDNs, sem bloqueio de render)
          ============================================================ -->
     <style>
-        body { background-color: #0A0A0D; }
+        :root { color-scheme: dark; }
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 20px;
+            background: #0A0A0D;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        img { display: block; }
 
         .page-bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: #0A0A0D; }
         .page-bg img {
@@ -57,8 +69,8 @@
             height: 100%;
             object-fit: cover;
             object-position: center 25%;
-            transform: scale(1.18);
-            filter: blur(28px) saturate(0.85) brightness(0.42);
+            transform: scale(1.25);
+            filter: blur(26px) saturate(0.85) brightness(0.45);
         }
         .page-bg::after {
             content: "";
@@ -67,31 +79,174 @@
             background: radial-gradient(ellipse at 50% 34%, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.55) 58%, rgba(0,0,0,0.88) 100%);
         }
 
-        .glass {
+        .wrap {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 112px;
+            height: 112px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center 18%;
+            border: 3px solid rgba(255,255,255,0.92);
+            box-shadow: 0 0 0 4px rgba(0,0,0,0.25), 0 14px 34px rgba(0,0,0,0.45);
+            margin-bottom: 16px;
+        }
+
+        .name {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            text-shadow: 0 2px 14px rgba(0,0,0,0.45);
+        }
+        .verified { width: 24px; height: 24px; flex: none; }
+
+        .meta { display: flex; justify-content: center; gap: 10px; margin-top: 16px; }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.95);
+            white-space: nowrap;
             background: rgba(255,255,255,0.10);
             border: 1px solid rgba(255,255,255,0.16);
             -webkit-backdrop-filter: blur(16px);
             backdrop-filter: blur(16px);
             box-shadow: 0 8px 32px rgba(0,0,0,0.28);
         }
+        .pill svg { width: 12px; height: 12px; flex: none; fill: currentColor; }
+        .pill-bio { width: 100%; margin-top: 10px; padding: 10px 16px; gap: 6px; font-weight: 500; color: rgba(255,255,255,0.9); }
+        .pill-bio .sep { color: rgba(255,255,255,0.4); }
 
-        .glass-strong {
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 0 rgba(34,197,94,0.65);
+            animation: onlinePulse 2s infinite;
+        }
+        @keyframes onlinePulse {
+            70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+            100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+        }
+
+        .lead {
+            margin: 28px 0 24px;
+            max-width: 17rem;
+            font-size: 21px;
+            font-weight: 800;
+            line-height: 1.3;
+            text-shadow: 0 2px 14px rgba(0,0,0,0.45);
+        }
+
+        .cta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 10px 16px 10px 10px;
+            border-radius: 999px;
+            color: #fff;
+            text-decoration: none;
             background: rgba(255,255,255,0.14);
             border: 1px solid rgba(255,255,255,0.22);
             -webkit-backdrop-filter: blur(18px);
             backdrop-filter: blur(18px);
             box-shadow: 0 12px 40px rgba(0,0,0,0.38);
+            transition: background 0.2s ease, transform 0.2s ease;
         }
+        .cta:hover { background: rgba(255,255,255,0.20); transform: translateY(-1px); }
+        .cta:active { transform: scale(0.98); }
 
-        .avatar-ring {
-            border: 3px solid rgba(255,255,255,0.9);
-            box-shadow: 0 0 0 4px rgba(0,0,0,0.25), 0 14px 34px rgba(0,0,0,0.45);
+        .cta-icon {
+            width: 44px;
+            height: 44px;
+            flex: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4FC3F7, #1D8FE1);
+            box-shadow: 0 6px 18px rgba(2,132,199,0.4);
         }
+        .cta-icon svg { width: 22px; height: 22px; fill: #fff; }
 
-        .dot-online { box-shadow: 0 0 0 0 rgba(34,197,94,0.65); animation: onlinePulse 2s infinite; }
-        @keyframes onlinePulse {
-            70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
-            100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+        .cta-text {
+            flex: 1;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+        .cta-dots { flex: none; opacity: 0.6; }
+        .cta-dots svg { width: 14px; height: 14px; fill: currentColor; }
+        .cta:hover .cta-dots { opacity: 0.95; }
+
+        .free {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            background: rgba(255,255,255,0.10);
+            border: 1px solid rgba(255,255,255,0.16);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .free:hover { background: rgba(255,255,255,0.20); }
+        .free:active { transform: scale(0.98); }
+        .free svg { width: 13px; height: 13px; fill: currentColor; }
+
+        .foot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: 32px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+        }
+        .foot p { margin: 0; }
+        .safe { display: inline-flex; align-items: center; gap: 6px; }
+        .safe svg { width: 11px; height: 11px; fill: #34d399; }
+        .legal { font-size: 10px; line-height: 1.7; }
+        .foot a { color: inherit; text-decoration: none; }
+        .foot a:hover { color: rgba(255,255,255,0.85); text-decoration: underline; text-underline-offset: 2px; }
+
+        a:focus-visible { outline: 2px solid #7dd3fc; outline-offset: 3px; }
+
+        @media (max-width: 360px) {
+            .name { font-size: 26px; }
+            .cta-text { font-size: 11.5px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
         }
     </style>
 
@@ -114,12 +269,11 @@
     <script>
         const TRACK_ENDPOINT = '/api/track';
 
-        // ID anónimo persistente do visitante (para contar únicos/recorrentes)
         function getVisitorId() {
             try {
                 let id = localStorage.getItem('gaby_vid');
                 if (!id) {
-                    id = (crypto && crypto.randomUUID)
+                    id = (window.crypto && crypto.randomUUID)
                         ? crypto.randomUUID()
                         : 'v-' + Date.now() + '-' + Math.random().toString(16).slice(2);
                     localStorage.setItem('gaby_vid', id);
@@ -130,7 +284,6 @@
             }
         }
 
-        // Deteta se é a primeira visita (para marcar novos vs recorrentes)
         function detectFirstSeen() {
             try {
                 const key = 'gaby_seen';
@@ -142,7 +295,6 @@
             }
         }
 
-        // Só cria identificadores depois do consentimento (RGPD).
         let VISITOR_ID = null;
         let FIRST_SEEN = null;
         function ensureIds() {
@@ -152,7 +304,6 @@
             }
         }
 
-        // Reúne o máximo de contexto possível do visitante
         function getTrackingContext(eventLabel) {
             ensureIds();
             const params = new URLSearchParams(window.location.search);
@@ -179,7 +330,6 @@
             }, campaign);
         }
 
-        // Envia evento para o backend próprio (não bloqueia a navegação)
         function gabyTrack(eventName, extra) {
             const payload = Object.assign(getTrackingContext(eventName), {
                 event: eventName,
@@ -199,7 +349,6 @@
             } catch (error) {}
         }
 
-        // Dispara conversão nos pixels + no backend próprio
         function trackClick(eventLabel) {
             const data = getTrackingContext(eventLabel);
 
@@ -211,10 +360,8 @@
             gabyTrack('cta_click', { label: eventLabel });
         }
 
-        // Page view
         window.addEventListener('load', () => gabyTrack('page_view'));
 
-        // Profundidade de scroll (25/50/75/100%)
         (function () {
             const marks = [25, 50, 75, 100];
             const seen = {};
@@ -230,7 +377,6 @@
             }, { passive: true });
         })();
 
-        // Tempo na página (enviado ao sair/minimizar)
         (function () {
             const start = Date.now();
             let sent = false;
@@ -247,29 +393,26 @@
     </script>
 </head>
 
-<body class="text-white font-sans antialiased min-h-screen flex flex-col items-center justify-center px-5 py-8">
+<body>
 
     <!-- Fundo desfocado -->
     <div class="page-bg" aria-hidden="true">
-        <img src="assets/avatar.jpg" alt="">
+        <img src="assets/bg.jpg" alt="" width="200" height="267" fetchpriority="high">
     </div>
 
-    <!-- Conteúdo principal -->
-    <div id="siteContent" class="w-full flex flex-col items-center">
-
-    <!-- Container Principal (Formato Telemóvel) -->
-    <div class="w-full max-w-[420px] flex flex-col items-center text-center">
+    <main class="wrap">
 
         <!-- Foto de perfil -->
-        <img src="assets/avatar.jpg"
+        <img src="assets/avatar-face.jpg"
              alt="Gaby Souza"
-             style="object-position: center 18%;"
-             class="avatar-ring w-28 h-28 mx-auto rounded-full object-cover mb-4">
+             width="360"
+             height="360"
+             class="avatar">
 
         <!-- Nome e verificado -->
-        <h1 class="flex items-center justify-center gap-2 text-3xl sm:text-[2rem] font-extrabold tracking-tight drop-shadow-md">
+        <h1 class="name">
             <span>Gaby Souza</span>
-            <svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" aria-label="Conta verificada" role="img">
+            <svg class="verified" viewBox="0 0 24 24" aria-label="Conta verificada" role="img">
                 <defs>
                     <linearGradient id="verifiedGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0" stop-color="#4BA8FF"/>
@@ -282,81 +425,72 @@
         </h1>
 
         <!-- Estado e localização -->
-        <div class="mt-4 flex items-center justify-center gap-2.5">
-            <span class="glass inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white/95">
-                <span class="dot-online inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+        <div class="meta">
+            <span class="pill">
+                <span class="dot"></span>
                 Online
             </span>
-            <span class="glass inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white/95">
-                <i class="fa-solid fa-location-dot text-[11px]"></i>
+            <span class="pill">
+                <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M215.7 499.2C267 435 384 279.4 384 192 384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2 12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
                 Lisboa, PT
             </span>
         </div>
 
         <!-- Bio -->
-        <div class="mt-2.5 w-full">
-            <span class="glass inline-flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-xs font-medium text-white/90">
-                <span>🇧🇷 Brasileira</span>
-                <span class="text-white/40">·</span>
-                <span>Med Vet 🐾</span>
-            </span>
-        </div>
+        <span class="pill pill-bio">
+            <span>🇧🇷 Brasileira</span>
+            <span class="sep">·</span>
+            <span>Med Vet 🐾</span>
+        </span>
 
         <!-- Chamada -->
-        <p class="mt-7 mb-6 max-w-[17rem] text-xl sm:text-[22px] font-extrabold leading-snug drop-shadow-md">
-            Quer descobrir o meu lado que poucos conhecem? <span class="inline-block">👇</span>
-        </p>
+        <p class="lead">Quer descobrir o meu lado que poucos conhecem? 👇</p>
 
         <!-- CTA principal -->
-        <a href="https://t.me/sou_gaby"
+        <a class="cta"
+           href="https://t.me/sou_gaby"
            onclick="trackClick('Contacto_Telegram')"
-           target="_blank" rel="noopener noreferrer"
-           class="glass-strong flex w-full items-center gap-3 rounded-full p-2.5 pr-4 transition-all duration-200 hover:bg-white/20 hover:-translate-y-0.5 active:scale-[0.98] group">
+           target="_blank" rel="noopener noreferrer">
 
-            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#4FC3F7] to-[#1D8FE1] shadow-lg shadow-sky-900/40">
-                <i class="fa-brands fa-telegram text-xl text-white"></i>
+            <span class="cta-icon" aria-hidden="true">
+                <svg viewBox="0 0 496 512"><path d="M248 8C111.1 8 0 119.1 0 256s111.1 248 248 248 248-111.1 248-248S384.9 8 248 8zm114.8 164.6-41.9 197.8c-3.2 14.8-11.7 18.4-23.9 11.5l-66-48.6-31.8 30.6c-3.5 3.5-6.5 6.5-13.3 6.5l4.8-67.9 123.8-111.9c5.4-4.8-1.2-7.5-8.4-2.7L171.9 291.7l-65.5-20.5c-14.2-4.4-14.5-14.2 3-21.1l256.1-98.7c11.8-4.4 22.2 2.7 18.3 21.2z"/></svg>
             </span>
 
-            <span class="flex-grow text-left text-[12.5px] sm:text-[13px] font-extrabold uppercase leading-tight tracking-wide text-white">
-                Clique aqui para me conhecer melhor ❤️
-            </span>
+            <span class="cta-text">Clique aqui para me conhecer melhor ❤️</span>
 
-            <span class="shrink-0 pl-1 text-white/60 group-hover:text-white/90 transition-colors" aria-hidden="true">
-                <i class="fa-solid fa-ellipsis-vertical"></i>
+            <span class="cta-dots" aria-hidden="true">
+                <svg viewBox="0 0 128 512"><path d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"/></svg>
             </span>
         </a>
 
         <!-- Canal gratuito -->
-        <a href="https://t.me/+wBUYZRygSlgxMThh"
+        <a class="free"
+           href="https://t.me/+wBUYZRygSlgxMThh"
            onclick="trackClick('Previews_Gratis')"
-           target="_blank" rel="noopener noreferrer"
-           class="glass mt-3 inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-xs font-semibold text-white/85 transition-all duration-200 hover:bg-white/20 active:scale-[0.98]">
-            <i class="fa-brands fa-telegram text-[13px]"></i>
+           target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 496 512" aria-hidden="true"><path d="M248 8C111.1 8 0 119.1 0 256s111.1 248 248 248 248-111.1 248-248S384.9 8 248 8zm114.8 164.6-41.9 197.8c-3.2 14.8-11.7 18.4-23.9 11.5l-66-48.6-31.8 30.6c-3.5 3.5-6.5 6.5-13.3 6.5l4.8-67.9 123.8-111.9c5.4-4.8-1.2-7.5-8.4-2.7L171.9 291.7l-65.5-20.5c-14.2-4.4-14.5-14.2 3-21.1l256.1-98.7c11.8-4.4 22.2 2.7 18.3 21.2z"/></svg>
             Prévias grátis no Telegram
         </a>
 
         <!-- Rodapé -->
-        <div class="mt-8 flex flex-col items-center gap-2 text-[11px] text-white/50">
-            <p class="inline-flex items-center gap-1.5">
-                <i class="fa-solid fa-lock text-emerald-400/80"></i>
+        <footer class="foot">
+            <p class="safe">
+                <svg viewBox="0 0 448 512" aria-hidden="true"><path d="M144 144v48h160v-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zm-48 48v-48C96 64.5 160.5 0 240 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64v192c0 35.3-28.7 64-64 64H48c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64h16zm240 128a48 48 0 1 0-96 0 48 48 0 1 0 96 0z"/></svg>
                 Ligação segura · Contacto direto pago
             </p>
-            <p class="text-[10px] leading-relaxed">
-                <a href="privacidade.html" class="hover:text-white/80 hover:underline underline-offset-2">Política de Privacidade</a>
-                <span class="mx-1">·</span>
-                <a href="termos.html" class="hover:text-white/80 hover:underline underline-offset-2">Termos de Uso</a>
-                <span class="mx-1">·</span>
-                <a href="https://t.me/sou_gaby" target="_blank" rel="noopener noreferrer" class="hover:text-white/80 hover:underline underline-offset-2">Contacto</a>
+            <p class="legal">
+                <a href="privacidade.html">Política de Privacidade</a>
+                <span aria-hidden="true"> · </span>
+                <a href="termos.html">Termos de Uso</a>
+                <span aria-hidden="true"> · </span>
+                <a href="https://t.me/sou_gaby" target="_blank" rel="noopener noreferrer">Contacto</a>
             </p>
-        </div>
+        </footer>
 
-    </div>
-
-    </div><!-- /siteContent -->
+    </main>
 
     <script>
         (function () {
-            // ---- Pixels: só carregam se houver IDs reais configurados ----
             function loadGA4(id) {
                 const s = document.createElement('script');
                 s.async = true;
@@ -399,17 +533,10 @@
                 }(window,document,'ttq');
             }
 
-            let pixelsLoaded = false;
-            function loadConfiguredPixels() {
-                if (pixelsLoaded) return;
-                const cfg = window.GABY_TRACKING || {};
-                if (cfg.ga4) loadGA4(cfg.ga4);
-                if (cfg.metaPixel) loadMetaPixel(cfg.metaPixel);
-                if (cfg.tiktokPixel) loadTikTokPixel(cfg.tiktokPixel);
-                pixelsLoaded = true;
-            }
-
-            loadConfiguredPixels();
+            const cfg = window.GABY_TRACKING || {};
+            if (cfg.ga4) loadGA4(cfg.ga4);
+            if (cfg.metaPixel) loadMetaPixel(cfg.metaPixel);
+            if (cfg.tiktokPixel) loadTikTokPixel(cfg.tiktokPixel);
         })();
     </script>
 
