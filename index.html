@@ -8,7 +8,7 @@
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#0A0A0D">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="apple-touch-icon" href="assets/avatar-face.jpg">
+    <link rel="apple-touch-icon" href="assets/avatar-gaby.jpg">
 
     <link rel="canonical" href="https://cantinhodagaby.vercel.app/">
 
@@ -64,13 +64,13 @@
         img { display: block; }
 
         .page-bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: #0A0A0D; }
-        .page-bg img {
+        .page-bg video {
             width: 100%;
             height: 100%;
             object-fit: cover;
             object-position: center 25%;
-            transform: scale(1.25);
-            filter: blur(26px) saturate(0.85) brightness(0.45);
+            transform: scale(1.08);
+            filter: blur(6px) saturate(0.95) brightness(0.55);
         }
         .page-bg::after {
             content: "";
@@ -247,6 +247,7 @@
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation: none !important; transition: none !important; }
+            .page-bg video { display: none; }
         }
     </style>
 
@@ -395,15 +396,18 @@
 
 <body>
 
-    <!-- Fundo desfocado -->
+    <!-- Fundo em vídeo -->
     <div class="page-bg" aria-hidden="true">
-        <img src="assets/bg.jpg" alt="" width="200" height="267" fetchpriority="high">
+        <video autoplay muted loop playsinline preload="auto"
+               disablepictureinpicture disableremoteplayback tabindex="-1">
+            <source src="assets/background-2b776dc4.mp4" type="video/mp4">
+        </video>
     </div>
 
     <main class="wrap">
 
         <!-- Foto de perfil -->
-        <img src="assets/avatar-face.jpg"
+        <img src="assets/avatar-gaby.jpg"
              alt="Gaby Souza"
              width="360"
              height="360"
@@ -490,6 +494,19 @@
     </main>
 
     <script>
+        (function () {
+            const video = document.querySelector('.page-bg video');
+            if (!video) return;
+
+            const play = () => video.play().catch(() => {});
+
+            play();
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) video.pause();
+                else play();
+            });
+        })();
+
         (function () {
             function loadGA4(id) {
                 const s = document.createElement('script');
