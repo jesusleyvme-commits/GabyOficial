@@ -8,9 +8,40 @@
 // Acesso: GET /api/stats com headers "x-dashboard-user" e "x-dashboard-pass"
 
 const crypto = require("crypto");
-const { redisCommand } = require("./_lib/http");
+const { redisCommand, clientIp } = require("./_lib/http");
 
 const EVENTS_KEY = "gaby:events";
+
+// Trava ataques de força bruta contra o login do painel.
+const AUTH_WINDOW_MS = 60 * 1000;
+const AUTH_MAX_FAILURES = 10;
+const authFailures = new Map();
+
+function authBlocked(ip) {
+  const now = Date.now();
+  const entry = authFailures.get(ip);
+  if (!entry) return false;
+  if (now - entry.start > AUTH_WINDOW_MS) {
+    authFailures.delete(ip);
+    return false;
+  }
+  return entry.count >= AUTH_MAX_FAILURES;
+}
+
+function registerFailure(ip) {
+  const now = Date.now();
+  const entry = authFailures.get(ip);
+  if (!entry || now - entry.start > AUTH_WINDOW_MS) {
+    authFailures.set(ip, { start: now, count: 1 });
+  } else {
+    entry.count += 1;
+  }
+  if (authFailures.size > 5000) {
+    for (const [key, value] of authFailures) {
+      if (now - value.start > AUTH_WINDOW_MS) authFailures.delete(key);
+    }
+  }
+}
 
 function safeEqual(a, b) {
   const left = Buffer.from(String(a ?? ""));
@@ -46,6 +77,12 @@ module.exports = async (req, res) => {
 
   const providedUser = req.headers["x-dashboard-user"] || "";
   const providedPass = req.headers["x-dashboard-pass"] || "";
+  const ip = clientIp(req) || "anonimo";
+
+  if (authBlocked(ip)) {
+    res.status(429).json({ ok: false, error: "too_many_attempts" });
+    return;
+  }
 
   // Define DASHBOARD_USER e DASHBOARD_PASS nas env vars do projeto (Vercel).
   // Sem credenciais configuradas, o acesso fica sempre negado.
@@ -59,9 +96,12 @@ module.exports = async (req, res) => {
     safeEqual(providedPass, expectedPass);
 
   if (!authorized) {
+    registerFailure(ip);
     res.status(401).json({ ok: false, error: "unauthorized" });
     return;
   }
+
+  authFailures.delete(ip);
 
   let events = [];
   try {

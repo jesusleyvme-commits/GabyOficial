@@ -151,10 +151,13 @@ module.exports = async (req, res) => {
   };
 
   try {
-    await redisPipeline([
+    const results = await redisPipeline([
       ["LPUSH", EVENTS_KEY, JSON.stringify(record)],
       ["LTRIM", EVENTS_KEY, "0", String(MAX_EVENTS - 1)],
     ]);
+    if (Array.isArray(results) && results.some((result) => result && result.error)) {
+      throw new Error("Redis pipeline error");
+    }
   } catch (error) {
     console.error("track_error", error.message);
     // Não rebenta a experiência do utilizador se o storage falhar.
