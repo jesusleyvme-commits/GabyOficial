@@ -115,8 +115,13 @@
     const loginError = document.getElementById("loginError");
 
     const params = new URLSearchParams(window.location.search);
-    let user = params.get("user") || sessionStorage.getItem("gaby_dash_user") || "";
-    let pass = params.get("pass") || sessionStorage.getItem("gaby_dash_pass") || "";
+    // Credenciais nunca vêm da URL (evita ficarem no histórico/logs).
+    let user = sessionStorage.getItem("gaby_dash_user") || "";
+    let pass = sessionStorage.getItem("gaby_dash_pass") || "";
+    if (params.has("user") || params.has("pass")) {
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+    let loading = false;
 
     function showDashboard() {
       login.classList.add("hidden");
@@ -130,6 +135,7 @@
       pass = "";
       dashboard.classList.add("hidden");
       login.classList.remove("hidden");
+      loginError.classList.add("hidden");
     }
 
     function rows(target, items, unit = "") {
