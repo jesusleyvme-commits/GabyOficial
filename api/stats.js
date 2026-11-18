@@ -2,10 +2,13 @@
 // Env vars necessárias:
 //   UPSTASH_REDIS_REST_URL
 //   UPSTASH_REDIS_REST_TOKEN
+//   DASHBOARD_USER
+//   DASHBOARD_PASS
 //
 // Acesso: GET /api/stats com headers "x-dashboard-user" e "x-dashboard-pass"
 
 const crypto = require("crypto");
+const { redisCommand } = require("./_lib/http");
 
 const EVENTS_KEY = "gaby:events";
 
@@ -14,19 +17,6 @@ function safeEqual(a, b) {
   const right = Buffer.from(String(b ?? ""));
   if (left.length !== right.length) return false;
   return crypto.timingSafeEqual(left, right);
-}
-
-async function redis(command, ...args) {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) throw new Error("Upstash Redis não configurado");
-
-  const path = [command, ...args.map((a) => encodeURIComponent(a))].join("/");
-  const response = await fetch(`${url}/${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!response.ok) throw new Error(`Redis ${response.status}`);
-  return response.json();
 }
 
 const hostOf = (value) => {
@@ -48,7 +38,8 @@ const top = (map, limit = 10) =>
     .slice(0, limit)
     .map(([name, count]) => ({ name, count }));
 
-const dayOf = (ts) => new Date(ts).toISOString().slice(0, 10);
+const dayOf = (ts) =>
+  Number.isFinite(ts) ? new Date(ts).toISOString().slice(0, 10) : "desconhecido";
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
@@ -57,19 +48,25 @@ module.exports = async (req, res) => {
   const providedPass = req.headers["x-dashboard-pass"] || "";
 
   // Define DASHBOARD_USER e DASHBOARD_PASS nas env vars do projeto (Vercel).
-  // Os valores abaixo são apenas fallback de compatibilidade.
-  const expectedUser = process.env.DASHBOARD_USER || "gaby";
-  const expectedPass = process.env.DASHBOARD_PASS || "aec199ad244d5fb51348215a";
+  // Sem credenciais configuradas, o acesso fica sempre negado.
+  const expectedUser = process.env.DASHBOARD_USER || "";
+  const expectedPass = process.env.DASHBOARD_PASS || "";
 
-  if (!safeEqual(providedUser, expectedUser) || !safeEqual(providedPass, expectedPass)) {
+  const authorized =
+    expectedUser &&
+    expectedPass &&
+    safeEqual(providedUser, expectedUser) &&
+    safeEqual(providedPass, expectedPass);
+
+  if (!authorized) {
     res.status(401).json({ ok: false, error: "unauthorized" });
     return;
   }
 
   let events = [];
   try {
-    const raw = await redis("LRANGE", EVENTS_KEY, "0", "-1");
-    events = (raw.result || [])
+    const raw = await redisCommand("LRANGE", EVENTS_KEY, "0", "-1");
+    events = (raw || [])
       .map((item) => {
         try {
           return JSON.parse(item);
@@ -95,15 +92,22 @@ module.exports = async (req, res) => {
   const eventsByName = {};
   const eventsByLabel = {};
   const byDay = {};
+  const platformCounts = {};
   const timeOnPage = [];
+  let timeOnPageTotal = 0;
 
-  events.forEach((event) => {
-    if (event.visitor) {
-      visitors.add(event.visitor);
-    }
-    if (event.firstSeen === false) {
-      returning.add(event.visitor || event.id);
-    }
+  const platformOf = (ua) => {
+    if (/iPhone|iPad|iPod/i.test(ua)) return "iOS";
+    if (/Android/i.test(ua)) return "Android";
+    if (/Windows/i.test(ua)) return "Windows";
+    if (/Mac OS X|Macintosh/i.test(ua)) return "macOS";
+    if (/Linux/i.test(ua)) return "Linux";
+    return "Outro";
+  };
+
+  for (const event of events) {
+    if (event.visitor) visitors.add(event.visitor);
+    if (event.firstSeen === false) returning.add(event.visitor || event.id);
     if (event.country) inc(countries, event.country);
     if (event.city) inc(cities, `${event.city} (${event.country || "?"})`);
     inc(referrers, hostOf(event.referrer));
@@ -113,31 +117,20 @@ module.exports = async (req, res) => {
     inc(eventsByName, event.event || "unknown");
     if (event.label) inc(eventsByLabel, `${event.event}:${event.label}`);
     inc(byDay, dayOf(event.ts));
+    inc(platformCounts, platformOf(event.userAgent || ""));
 
     if (event.event === "time_on_page" && event.extra && typeof event.extra.seconds === "number") {
       timeOnPage.push(event.extra.seconds);
+      timeOnPageTotal += event.extra.seconds;
     }
-  });
+  }
 
   const avgTime =
-    timeOnPage.length > 0
-      ? Math.round(timeOnPage.reduce((a, b) => a + b, 0) / timeOnPage.length)
-      : 0;
+    timeOnPage.length > 0 ? Math.round(timeOnPageTotal / timeOnPage.length) : 0;
 
-  const uaLabels = {};
-  events.forEach((event) => {
-    const ua = event.userAgent || "";
-    let name = "Outro";
-    if (/iPhone|iPad|iPod/i.test(ua)) name = "iOS";
-    else if (/Android/i.test(ua)) name = "Android";
-    else if (/Windows/i.test(ua)) name = "Windows";
-    else if (/Mac OS X|Macintosh/i.test(ua)) name = "macOS";
-    else if (/Linux/i.test(ua)) name = "Linux";
-    inc(uaLabels, name);
-  });
-
-  const days = Object.keys(byDay).sort();
-  const series = days.map((day) => ({ day, count: byDay[day] }));
+  const series = Object.keys(byDay)
+    .sort()
+    .map((day) => ({ day, count: byDay[day] }));
 
   const recent = events.slice(0, 50).map((event) => ({
     ts: event.ts,
@@ -165,7 +158,7 @@ module.exports = async (req, res) => {
     timezones: top(timezones),
     events: top(eventsByName),
     clicks: top(eventsByLabel),
-    platforms: top(uaLabels),
+    platforms: top(platformCounts),
     series,
     recent,
   });
