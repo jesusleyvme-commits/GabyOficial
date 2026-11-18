@@ -177,25 +177,45 @@
       }
     }
 
-    async function load() {
-      if (!user || !pass) return;
+    async function load(options = {}) {
+      if (!user || !pass || loading) return false;
+      loading = true;
       sessionStorage.setItem("gaby_dash_user", user);
       sessionStorage.setItem("gaby_dash_pass", pass);
-      const response = await fetch("/api/stats", {
-        headers: { "x-dashboard-user": user, "x-dashboard-pass": pass },
-      });
-      if (response.status === 401) {
-        logout();
-        return;
-      }
-      const data = await response.json();
-      if (!data.ok) {
-        logout();
-        return;
-      }
-      showDashboard();
-      document.getElementById("updatedAt").textContent = "Atualizado " + new Date().toLocaleTimeString("pt-PT");
+      try {
+        const response = await fetch("/api/stats", {
+          cache: "no-store",
+          headers: { "x-dashboard-user": user, "x-dashboard-pass": pass },
+        });
+        if (response.status === 401) {
+          logout();
+          return false;
+        }
+        const data = await response.json();
+        if (!data.ok) {
+          if (options.showError) loginError.textContent = "Não foi possível carregar os dados.";
+          logout();
+          return false;
+        }
 
+        loginError.classList.add("hidden");
+        showDashboard();
+        document.getElementById("updatedAt").textContent =
+          "Atualizado " + new Date().toLocaleTimeString("pt-PT");
+        render(data);
+        return true;
+      } catch (error) {
+        if (options.showError) {
+          loginError.textContent = "Sem ligação ao servidor. Tenta outra vez.";
+          loginError.classList.remove("hidden");
+        }
+        return false;
+      } finally {
+        loading = false;
+      }
+    }
+
+    function render(data) {
       const cards = [
         ["Eventos", data.total],
         ["Visitantes únicos", data.uniqueVisitors],
@@ -206,8 +226,8 @@
         .map(
           ([label, value]) => `
           <div class="bg-white rounded-2xl border border-pink-100 p-4">
-            <p class="text-xs text-gray-400 uppercase tracking-wide">${label}</p>
-            <p class="text-2xl font-bold mt-1">${value}</p>
+            <p class="text-xs text-gray-400 uppercase tracking-wide">${escapeHtml(label)}</p>
+            <p class="text-2xl font-bold mt-1">${escapeHtml(value)}</p>
           </div>`
         )
         .join("");
@@ -227,9 +247,9 @@
         ? series
             .map(
               (s) => `
-              <div class="flex flex-col items-center justify-end h-full min-w-[26px]" title="${s.day}: ${s.count}">
+              <div class="flex flex-col items-center justify-end h-full min-w-[26px]" title="${escapeHtml(s.day)}: ${escapeHtml(s.count)}">
                 <div class="bar w-4 rounded-t" style="height:${Math.max(4, (s.count / maxDay) * 100)}%"></div>
-                <span class="text-[9px] text-gray-400 mt-1 rotate-45">${s.day.slice(5)}</span>
+                <span class="text-[9px] text-gray-400 mt-1 rotate-45">${escapeHtml(String(s.day).slice(5))}</span>
               </div>`
             )
             .join("")
@@ -251,22 +271,23 @@
         .join("") || '<tr><td class="py-3 text-gray-400" colspan="7">Sem eventos ainda.</td></tr>';
     }
 
-    document.getElementById("loginBtn").addEventListener("click", () => {
+    const loginBtn = document.getElementById("loginBtn");
+
+    loginBtn.addEventListener("click", async () => {
       user = userInput.value.trim();
       pass = keyInput.value.trim();
       if (!user || !pass) return;
-      load().then(() => {
-        if (dashboard.classList.contains("hidden")) {
-          loginError.classList.remove("hidden");
-        }
-      });
+      loginBtn.disabled = true;
+      const ok = await load({ showError: true });
+      loginBtn.disabled = false;
+      if (!ok) loginError.classList.remove("hidden");
     });
 
     keyInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") document.getElementById("loginBtn").click();
+      if (event.key === "Enter") loginBtn.click();
     });
 
-    document.getElementById("refreshBtn").addEventListener("click", load);
+    document.getElementById("refreshBtn").addEventListener("click", () => load());
     document.getElementById("logoutBtn").addEventListener("click", logout);
 
     if (user && pass) load();
