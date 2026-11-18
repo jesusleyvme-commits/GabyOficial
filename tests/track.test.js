@@ -9,8 +9,8 @@ process.env.IP_SALT = "test-salt";
 const handler = require(path.resolve(__dirname, "../api/track.js"));
 
 let calls = [];
-global.fetch = async (url) => {
-  calls.push(String(url));
+global.fetch = async (url, options = {}) => {
+  calls.push({ url: String(url), body: options.body });
   return { ok: true, json: async () => ({ result: 1 }) };
 };
 
@@ -44,10 +44,13 @@ const request = (body, ip, extraHeaders = {}) => {
 };
 
 const lastRecord = () => {
-  const pushes = calls.filter((url) => url.includes("/LPUSH/"));
-  assert.ok(pushes.length > 0, "nada foi gravado no Redis");
-  const encoded = pushes[pushes.length - 1].split("/LPUSH/gaby%3Aevents/")[1];
-  return JSON.parse(decodeURIComponent(encoded));
+  const pipelines = calls.filter((call) => call.url.endsWith("/pipeline"));
+  assert.ok(pipelines.length > 0, "nada foi gravado no Redis");
+  const commands = JSON.parse(pipelines[pipelines.length - 1].body);
+  const push = commands.find((command) => command[0] === "LPUSH");
+  assert.ok(push, "LPUSH não foi enviado");
+  assert.equal(push[1], "gaby:events");
+  return JSON.parse(push[2]);
 };
 
 test("GET devolve 405", async () => {
